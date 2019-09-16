@@ -2,18 +2,50 @@ import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import SwipeableRoutes from "react-swipeable-routes";
 
-const RedView = () => (
-  <div style={{ height: 300, backgroundColor: "red" }}>Red</div>
-);
-const BlueView = () => (
-  <div style={{ height: 300, backgroundColor: "blue" }}>Blue</div>
-);
-const GreenView = () => (
-  <div style={{ height: 300, backgroundColor: "green" }}>Green</div>
-);
-const YellowView = () => (
-  <div style={{ height: 300, backgroundColor: "yellow" }}>Yellow</div>
-);
+class RedView extends Component {
+  componentDidMount(){
+    console.log("RedView componentDidMount");
+  }
+  render() {
+    return (
+      <div style={{ height: 300, backgroundColor: "red" }}>Red</div>
+    )
+  }
+};
+
+class BlueView extends Component {
+  componentDidMount(){
+    console.log("BlueView componentDidMount");
+  }
+  render() {
+    return (
+      <div style={{ height: 300, backgroundColor: "blue" }}>Red</div>
+    )
+  }
+};
+
+class GreenView extends Component {
+  componentDidMount(){
+    console.log("GreenView componentDidMount");
+  }
+  render() {
+    return (
+      <div style={{ height: 300, backgroundColor: "green" }}>Green</div>
+    )
+  }
+};
+
+class YellowView extends Component {
+  componentDidMount(){
+    console.log("YellowView componentDidMount");
+  }
+  render() {
+    return (
+      <div style={{ height: 300, backgroundColor: "yellow" }}>Yellow</div>
+    )
+  }
+};
+
 const OtherColorView = ({ match }) => (
   <div style={{ height: 300, backgroundColor: match.params.color }}>
     {match.params.color}
@@ -34,7 +66,7 @@ class App extends Component {
             <Link to="/other/saddlebrown">Saddle Brown</Link>
           </div>
 
-          <SwipeableRoutes replace>
+          <SwipeableRoutes>
             <Route path="/red" component={RedView} />
             <Route path="/blue" component={BlueView} />
             <Route path="/green" component={GreenView} />
