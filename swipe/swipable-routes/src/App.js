@@ -19,7 +19,7 @@ class BlueView extends Component {
   }
   render() {
     return (
-      <div style={{ height: 300, backgroundColor: "blue" }}>Red</div>
+      <div style={{ height: 300, backgroundColor: "blue" }}>Blue</div>
     )
   }
 };
@@ -66,7 +66,7 @@ class App extends Component {
             <Link to="/other/saddlebrown">Saddle Brown</Link>
           </div>
 
-          <SwipeableRoutes>
+          <SwipeableRoutes enableMouseEvents>
             <Route path="/red" component={RedView} />
             <Route path="/blue" component={BlueView} />
             <Route path="/green" component={GreenView} />
