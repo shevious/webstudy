@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import SwipeableRoutes from "react-swipeable-routes";
+import Swiper from 'react-id-swiper';
+import 'react-id-swiper/lib/styles/css/swiper.css';
 
 class RedView extends Component {
   componentDidMount(){
@@ -8,7 +10,15 @@ class RedView extends Component {
   }
   render() {
     return (
-      <div style={{ height: 300, backgroundColor: "red" }}>Red</div>
+      <div style={{ height: 300, backgroundColor: "red" }}>
+        <Swiper>
+          <div>Slide #1</div>
+          <div>Slide #2</div>
+          <div>Slide #3</div>
+          <div>Slide #4</div>
+          <div>Slide #5</div>
+        </Swiper>
+      </div>
     )
   }
 };
