@@ -19,13 +19,13 @@ class RedView extends Component {
 class WhiteView extends Component {
   render() {
     return (
-      <SwipeableViews enableMouseEvents style={{ height: 300, backgroundColor: "white" }}>
+      <SwipeableViews enableMouseEvents ignoreSwipe style={{ height: 200, backgroundColor: "white" }}>
         <Swiper>
-          <div style={{ height: 200, backgroundColor: '#FEA900' }}>Slide #1</div>
-          <div style={{ height: 200, backgroundColor: '#B3DC4A' }}>Slide #2</div>
-          <div style={{ height: 200, backgroundColor: '#6AC0FF' }}>Slide #3</div>
-          <div style={{ height: 200, backgroundColor: "rgb(0, 255, 149)" }}>Slide #4</div>
-          <div style={{ height: 200, backgroundColor: "rgb(116, 106, 91)" }}>Slide #5</div>
+          <div style={{ height: 200, backgroundColor: '#FEA900' }}>Swiper Slide #1</div>
+          <div style={{ height: 200, backgroundColor: '#B3DC4A' }}>Swiper Slide #2</div>
+          <div style={{ height: 200, backgroundColor: '#6AC0FF' }}>Swiper Slide #3</div>
+          <div style={{ height: 200, backgroundColor: "rgb(0, 255, 149)" }}>Swiper Slide #4</div>
+          <div style={{ height: 200, backgroundColor: "rgb(116, 106, 91)" }}>Swiper Slide #5</div>
         </Swiper>
       </SwipeableViews>
     )
