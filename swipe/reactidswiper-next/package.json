@@ -1,0 +1,22 @@
+{
+  "name": "reactidswiper-next",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@react-yuki/ui": "^0.0.34",
+    "@zeit/next-css": "^1.0.1",
+    "@zeit/next-sass": "^1.0.1",
+    "next": "9.1.1",
+    "node-sass": "^4.13.0",
+    "react": "16.11.0",
+    "react-dom": "16.11.0",
+    "react-id-swiper": "^2.3.2",
+    "styled-components": "^4.4.0",
+    "swiper": "^5.2.0"
+  }
+}
