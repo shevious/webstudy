@@ -1,19 +1,19 @@
 const Text1 = () => (
 <div>
-<h1 style={{'text-align': 'center'}}>
+<h1 style={{'textAlign': 'center'}}>
 보통의 존재
 </h1>
-<p style={{'text-align': 'center', 'color': 'lightgrey', 'font-size': '14px'}}>
+<p style={{'textAlign': 'center', 'color': 'lightgrey', 'fontSize': '14px'}}>
 사람이 아무리 뛰어난들 자연과 우주 속에서, 신 앞에서는 미약하고 보통의 존재에 불과할 것이다.
 </p>
 <hr style={{'color': 'lightgrey'}}></hr>
-<h2 style={{'text-align': 'center'}}>
+<h2 style={{'textAlign': 'center'}}>
 ''
 <br />
 내 의지로 사는 것이 아니라 존재하기 때문에 살 수밖에 없는 삶
 <br />
 </h2>
-<p style={{'text-align': 'justify', 'font-size': '14px'}}>
+<p style={{'textAlign': 'justify', 'fontSize': '14px'}}>
 오늘 나를 행복하게 하는 것들이 가족 중에 암에 걸린 사람이 없는 것, 빚쟁이들의 빚 독촉 받을 일이 없는 것, 먹고 싶은 라면을 지금 내 손으로
  끓여먹을 수 있다는 하찮은 것들뿐이라 해도 누가 뭐라고 할 수 있는 것은 아니다. 그리고 그러한 행복의 크기가 결코 작은 것 또한 아니다. 하>지만, 그것이 만약 체념에서 비롯된 행복이라면, 더 많은 것을 갖고 싶고, 하고 싶은데 그 모든 욕망들을 어쩔 수 없이 꾹꾹 누르고, 인생에서 누
 릴 수 있는 많은 영화에 일찌감치 백기를 든 대가로 주어지는 것이라면 그건 자신에 대한 기만이 아닐까.
