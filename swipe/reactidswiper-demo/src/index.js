@@ -1,3 +1,5 @@
+import "react-app-polyfill/ie11";
+import "react-app-polyfill/stable";
 import React from "react";
 import ReactDOM from "react-dom";
 import { ThemeProvider, createGlobalStyle } from "styled-components";
@@ -5,7 +7,7 @@ import { Box, Heading, theme, normalize } from "@react-yuki/ui";
 import generateData from "./data";
 import Slider from "./slider";
 
-import "react-id-swiper/lib/styles/scss/swiper.scss";
+import "swiper/css/swiper.css";
 import "./styles.scss";
 
 const Styles = createGlobalStyle`
