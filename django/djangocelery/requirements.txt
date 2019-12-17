@@ -1,0 +1,4 @@
+django==1.11.26
+django-timezone-field==2.1
+celery==4.3.0
+django-celery-results==1.1.2
