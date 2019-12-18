@@ -36,6 +36,19 @@ def worker_shutting_down_handler(sig, how, exitcode, ** kwargs):
 
 @app.task(bind=True, base=AbortableTask)
 def longtask(self):
+    from celery.platforms import signals
+    from celery.contrib.abortable import AbortableAsyncResult
+
+    def int_handler(signum, frame):
+        id = self.request.id
+        print(f'int_handler({signum}, {frame})')
+        print(f'id = {id}')
+        result = AbortableAsyncResult(id)
+        result.abort()
+
+    signals['INT'] = int_handler
+    signals['TERM'] = int_handler
+
     for i in range(0, 4):
         if self.is_aborted():
             return 'aborted'
