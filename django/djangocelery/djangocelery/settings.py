@@ -15,12 +15,12 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '#@9up=n0*h%c9i&xy9gk^e+0x3#m&loty**0@nfccrq@y1*1ov'
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -34,6 +34,26 @@ CELERY_BROKER_TRANSPORT_OPTIONS = {
     "data_folder_out": os.path.join(broker_dir, "out"),
     "data_folder_processed": os.path.join(broker_dir, "processed"),
 }
+#CELERY_worker_redirect_stdouts = 'DEBUG'
+
+'''
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
+        },
+    },
+}
+'''
+
 import os
 for f in [CELERY_BROKER_TRANSPORT_OPTIONS['data_folder_in'],
           CELERY_BROKER_TRANSPORT_OPTIONS['data_folder_processed']]:
