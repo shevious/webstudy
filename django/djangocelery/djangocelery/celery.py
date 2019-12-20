@@ -72,7 +72,7 @@ from scrapy.crawler import CrawlerRunner
 from twisted.internet import reactor
 from scrapy.utils.project import get_project_settings
 from scrapy.settings import Settings
-from Ulsan import settings
+from Ulsan import settings as ulsan_settings
 from scrapy.spiderloader import SpiderLoader
 
 from crochet import setup, wait_for
@@ -83,6 +83,7 @@ default_handler = signals['TERM']
 
 @app.task(bind=True)
 def ulsan_course_task(self, base=AbortableTask):
+    '''
     from celery.contrib.abortable import AbortableAsyncResult
 
     def int_handler(signum, frame):
@@ -99,19 +100,16 @@ def ulsan_course_task(self, base=AbortableTask):
         return
 
     print(f"##### term handler = {signals['TERM']}")
+    '''
     #signals['INT'] = int_handler
     #signals['TERM'] = int_handler
 
     setup()
 
-    def run_sleep():
-        sleep(30)
-        return 0
-
     @wait_for(timeout=99999)
     def run_spider():
         s = Settings()
-        s.setmodule(settings)
+        s.setmodule(ulsan_settings)
         #process = CrawlerProcess(get_project_settings())
         sl = SpiderLoader(settings=s)
         print('#### spider list=', sl.list())
