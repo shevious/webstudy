@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_celery_results',
     'django_celery_beat',
+    'crawler.apps.CrawlerConfig',
 ]
 
 MIDDLEWARE = [
@@ -113,9 +114,26 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    },
+    'oracle': {
+        'ENGINE': 'django.db.backends.oracle',
+        'NAME': 'xe',
+        'USER': 'hr',
+        'PASSWORD': 'hr',
+        'HOST': 'localhost',
+        'PORT': '1521',
     }
 }
 
+DATABASE_ROUTERS = ['djangocelery.dbrouter.OracleRouter']
+DATABASE_APPS_MAPPING = {'contenttypes': 'default',
+                     'auth': 'default',
+                     'admin': 'default',
+                     'sessions': 'default',
+                     'messages': 'default',
+                     'staticfiles': 'default',
+                     'django_celery_results': 'oracle',
+                     }
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
