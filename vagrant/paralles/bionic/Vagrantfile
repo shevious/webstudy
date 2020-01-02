@@ -6,13 +6,24 @@
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 
-MEMORY = 4096
+MEMORY = 6144
 CPU_COUNT = 2
 
 
 MOUNT_DIRS = {
   #:workspace => {:repo => "/System/Volumes/Data/Users/shevious/bionic/workspace", :local => "/home/vagrant/workspace", :owner => "vagrant"},
 }
+
+required_plugins = %w(vagrant-parallels)
+
+required_plugins.each do |plugin|
+  need_restart = false
+  unless Vagrant.has_plugin? plugin
+    system "vagrant plugin install #{plugin}"
+    need_restart = true
+  end
+  exec "vagrant #{ARGV.join(' ')}" if need_restart
+end
 
 Vagrant.configure("2") do |config|
   # The most common configuration options are documented and commented below.
