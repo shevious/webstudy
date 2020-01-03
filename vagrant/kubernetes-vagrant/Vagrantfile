@@ -15,12 +15,13 @@ Vagrant.configure("2") do |config|
     config.vm.define "k8s-master" do |master|
         master.vm.box = IMAGE_NAME
         master.vm.network "private_network", ip: "192.168.33.10"
+        master.vm.network "forwarded_port", guest: 8001, host: 8001, host_ip: "127.0.0.1"
         master.vm.hostname = "k8s-master"
         master.vm.provision "ansible" do |ansible|
             ansible.playbook = "kubernetes-setup/master-playbook.yml"
             ansible.extra_vars = {
                 node_ip: "192.168.33.10",
-                node_net: "192.168.33.0/24"
+                node_net: "172.16.0.0/16"
             }
             ansible.compatibility_mode = "2.0"
             #ansible.verbose = "vvv"
