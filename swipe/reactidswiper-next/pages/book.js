@@ -1,13 +1,12 @@
-import "react-app-polyfill/ie11";
-import "react-app-polyfill/stable";
 import React from "react";
-import ReactDOM from "react-dom";
 import { ThemeProvider, createGlobalStyle } from "styled-components";
 import { Box, Heading, theme, normalize } from "@react-yuki/ui";
-import generateData from "./data";
-import Slider from "./slider";
+import generateData from "../components/data";
+import Slider from "../components/slider";
+import BookSlider from "../components/bookslider";
+import Link from "next/link";
 
-import "swiper/css/swiper.css";
+import "react-id-swiper/lib/styles/scss/swiper.scss";
 import "./styles.scss";
 
 const Styles = createGlobalStyle`
@@ -79,17 +78,15 @@ const App = () => (
             as="h3"
             fontWeight={2}
           >
-            Please reproduce your issues here!!!!
+            <Link href="/vertical"><a>vertical</a></Link>
           </Heading>
         </Box>
         <Box>
-          <Slider items={generateData()} />
+          <BookSlider items={generateData()} />
         </Box>
       </Box>
     </>
   </ThemeProvider>
 );
 
-const rootElement = document.getElementById("root");
-
-ReactDOM.render(<App />, rootElement);
+export default App;

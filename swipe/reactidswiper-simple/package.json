@@ -1,17 +1,13 @@
 {
-  "name": "reactidswiper",
+  "name": "reactidswiper-simple",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@react-yuki/ui": "^0.0.34",
-    "bulma": "^0.8.0",
-    "node-sass": "^4.13.0",
-    "react": "^16.11.0",
+    "react": "^16.12.0",
     "react-app-polyfill": "^1.0.4",
-    "react-dom": "^16.11.0",
+    "react-dom": "^16.12.0",
     "react-id-swiper": "^2.4.0",
     "react-scripts": "3.2.0",
-    "styled-components": "^4.4.0",
     "swiper": "^5.2.1"
   },
   "scripts": {
