@@ -4818,7 +4818,7 @@ function connect(options) {
       error.name = err.name;
       error.stack = err.stack; // __NEXT_DIST_DIR is provided by webpack
 
-      (0, _sourceMapSupport.rewriteStacktrace)(error, "/home/vagrant/webstudy/swipe/swipeable-view/.next");
+      (0, _sourceMapSupport.rewriteStacktrace)(error, "/home/vagrant/workspace/webstudy/swipe/swipeable-view/.next");
       return error;
     }
   };

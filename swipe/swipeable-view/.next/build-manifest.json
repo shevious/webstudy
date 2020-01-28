@@ -12,11 +12,11 @@
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
-    "/coverflow": [
+    "/next/dist/pages/_error": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
-    "/effect": [
+    "/vertical": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ]
