@@ -1,0 +1,9 @@
+tensorflow
+numpy
+
+# models requirements
+pillow
+lxml
+matplotlib
+opencv-python
+pathlib
