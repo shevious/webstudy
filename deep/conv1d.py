@@ -15,13 +15,14 @@ plt.show()
 '''
 image = np.array([ [0, 0, 0, 255, 255, 255, 0, 0, 0] ], dtype=float)
 ax = plt.subplot()
-ax.imshow(image, cmap=plt.cm.gray)
+im = ax.imshow(image, cmap=plt.cm.gray)
 ax.grid(True)
 ax.set_xticks(np.arange(-0.5, 8.5, step=1))
 ax.set_xticklabels([])
 ax.set_yticks(np.arange(-0.5, 1.5, step=1))
 ax.set_yticklabels([])
 ax.tick_params(which='both', length=0)
+plt.colorbar(im)
 plt.show()
 
 '''
