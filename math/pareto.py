@@ -7,8 +7,7 @@ x = np.linspace(1,50,100)
 
 # the function, which is y = x^2 here
 alpha = 1.16 # 8:2
-alpha = 1.42 # 7:3
-y = x**(-alpha)
+alpha = 1.42 # 7:3 y = x**(-alpha)
 
 '''
 # setting the axes at the centre
@@ -30,16 +29,48 @@ plt.show()
 
 N = 1000
 
-n = np.linspace(0,1,N)
+max_salary = 30
 
-x = n**alpha
-print(x)
+x = np.linspace(1,max_salary,max_salary)
+#print(x)
+
+#n_x = alpha*(x**(-alpha-1))
+n_x = x**(-alpha) - (x+1)**(-alpha)
+N_x = n_x*N
+#print(N_x)
+N_x = np.trunc(N_x)
+#print(N_x)
 
 sum = 0
-for i in range(0,N,1):
+for i in range(0, max_salary, 1):
+  sum += N_x[i]
+
+#print(sum)
+I = 1000000.
+A = alpha/(alpha-1)
+print('A = ', A)
+
+n = np.linspace(1,N,N)
+x = (n/N)**alpha
+
+sum = 0
+for i in range(0, 300, 1):
   sum += x[i]
 
-A = alpha/(alpha-1.)
-#print(A)
+print(sum)
 
-#print(sum/N)
+# setting the axes at the centre
+fig = plt.figure()
+ax = fig.add_subplot(1, 1, 1)
+#ax.spines['left'].set_position('center')
+ax.spines['bottom'].set_position('zero')
+ax.spines['right'].set_color('none')
+ax.spines['top'].set_color('none')
+ax.xaxis.set_ticks_position('bottom')
+ax.yaxis.set_ticks_position('left')
+
+# plot the function
+plt.plot(n,x, 'r')
+
+# show the plot
+plt.show()
