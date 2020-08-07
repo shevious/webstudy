@@ -23,7 +23,8 @@ open(root+'/person/'+'01.jpg', 'wb').write(r.content)
 
 import requests
 #url = 'https://file-examples.com/wp-content/uploads/2017/10/file_example_PNG_500kB.png'
-url = 'https://file-examples.com/wp-content/uploads/2017/10/file_example_JPG_100kB.jpg'
+#url = 'https://file-examples.com/wp-content/uploads/2017/10/file_example_JPG_100kB.jpg'
+url = 'https://file-examples-com.github.io/uploads/2017/10/file_example_JPG_100kB.jpg'
 r = requests.get(url, allow_redirects=True)
 open(root+'/laptop/'+'02.jpg', 'wb').write(r.content)
 
@@ -60,6 +61,7 @@ for root, folders, filenames in os.walk(src_folder):
         a=fig.add_subplot(num_folders, 1, image_num)
         # Add the image to the plot
         image_plot = plt.imshow(image)
+        plt.grid(True)
         # Add a caption with the folder name
         a.set_title(folder)
         
