@@ -7,7 +7,7 @@ x = np.linspace(1,50,100)
 
 # the function, which is y = x^2 here
 alpha = 1.16 # 8:2
-alpha = 1.42 # 7:3 y = x**(-alpha)
+alpha = 1.42096 # 7:3 y = x**(-alpha)
 
 '''
 # setting the axes at the centre
@@ -51,12 +51,15 @@ A = alpha/(alpha-1)
 print('A = ', A)
 
 n = np.linspace(1,N,N)
-x = (n/N)**alpha
+#print(n)
+x = (n/N)**((alpha-1)/alpha) - ((n-1)/N)**((alpha-1)/alpha)
+x = np.trunc(I*x)
+print(x)
 
 sum = 0
-for i in range(0, 300, 1):
+N_p = int(N*9/100)
+for i in range(0, N_p, 1):
   sum += x[i]
-
 print(sum)
 
 # setting the axes at the centre
