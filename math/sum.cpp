@@ -8,11 +8,21 @@ int pow(int n)
     return 1;
 }
 
-int main()
+int pow_sum(int n)
 {
   int sum = 0;
-  for (int i = 0; i < 32; i++)
+  for (int i = 0; i < n; i++)
     sum += pow(i);
+  return sum;
+}
 
-  printf("%d\n", sum);
+int main()
+{
+  printf("1: %d\n", pow_sum(1));
+  printf("2: %d\n", pow_sum(2));
+  printf("3: %d\n", pow_sum(3));
+  printf("...\n");
+  printf("30: %d\n", pow_sum(30));
+  printf("31: %d\n", pow_sum(31));
+  printf("32: %d\n", pow_sum(32));
 }
