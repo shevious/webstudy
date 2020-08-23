@@ -10,7 +10,8 @@ import matplotlib.animation
 #input array
 a = np.random.randint(50,150, size=(5,5))
 # kernel
-kernel = np.array([[ 0,-1, 0], [-1, 5,-1], [ 0,-1, 0]])
+#kernel = np.array([[ 0,-1, 0], [-1, 5,-1], [ 0,-1, 0]])
+kernel = np.array([[ 0.1, 0.1, 0.1], [0.1, 0.1, 0.1], [ 0.1, 0.1, 0.1]])
 
 # visualization array (2 bigger in each direction)
 va = np.zeros((a.shape[0]+2, a.shape[1]+2), dtype=int)
@@ -86,6 +87,7 @@ def animate(ij):
     o = kernel.shape[1]//2
     # calculate result
     res_ij = (kernel*va[1+i-o:1+i+o+1, 1+j-o:1+j+o+1]).sum()
+    res_ij = np.round(res_ij).astype('int')
     res_texts[i][j].set_text(res_ij)
     # make colors
     c = va_color.copy()
@@ -100,4 +102,4 @@ i,j = np.indices(res.shape)
 ani = matplotlib.animation.FuncAnimation(fig, animate, init_func=init, 
                                          frames=zip(i.flat, j.flat), interval=400)
 ani.save("algo.gif", writer="imagemagick")
-plt.show()
+#plt.show()

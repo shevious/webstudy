@@ -6,12 +6,24 @@ from tensorflow.keras.layers import Conv1D
 import matplotlib.pyplot as plt
 
 data = np.array([ [0, 0, 0, 255, 255, 255, 0, 0, 0] ], dtype=float)
+#x = np.linspace(0, 8, 9)
+x = np.array([0,1,2,2.5,2.5,  3,  4,  5,5.5,5.5,6,7,8])
+y = np.array([0,0,0,  0,  1,  1,  1,  1,  1,  0,0,0,0])
+y *= 255
+print(x, x.shape)
+plt.plot(x, y)
+plt.show()
+x = np.array([0,1,2,2.5,2.5,  3, 3.5,3.5,  4, 4.5, 4.5,  5,5.5,5.5,6,7,8])
+z = np.array([0,0,0,  0, -1, -1, -1,   0,  0,  0,    1,  1,  1,  0,0,0,0])
+plt.plot(x, z, color='red')
+plt.show()
 '''
-plt.imshow(image)
+plt.imshow(data)
 plt.xticks(np.arange(-0.5, 8.5, step=1), [])
 plt.yticks(np.arange(-0.5, 0.5, step=1), [])
 plt.grid(True)
 plt.show()
+'''
 '''
 image = np.array([ [0, 0, 0, 255, 255, 255, 0, 0, 0] ], dtype=float)
 ax = plt.subplot()
@@ -24,6 +36,7 @@ ax.set_yticklabels([])
 ax.tick_params(which='both', length=0)
 plt.colorbar(im)
 plt.show()
+'''
 
 '''
 input_shape = (1, 9, 1)
