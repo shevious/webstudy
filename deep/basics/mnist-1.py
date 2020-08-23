@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 # https://www.tensorflow.org/tutorials/keras/classification?hl=ko
 
 from __future__ import absolute_import, division, print_function, unicode_literals, unicode_literals
@@ -78,9 +80,10 @@ model = keras.Sequential([
 model.summary()
 
 model.compile(optimizer='adam',
-              #loss='sparse_categorical_crossentropy',
-              loss='categorical_crossentropy',
+              loss='sparse_categorical_crossentropy',
+              #loss='categorical_crossentropy',
               metrics=['accuracy'])
+
 model.fit(x_train, y_train, epochs=5)
 
 '''
