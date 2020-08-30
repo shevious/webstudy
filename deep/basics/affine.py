@@ -29,3 +29,14 @@ plt.subplot(121),plt.imshow(img),plt.title('image')
 plt.subplot(122),plt.imshow(dst),plt.title('Affine')
 plt.show()
 
+
+center = (cols/2, rows/2)
+angle = 90
+scale = 1
+# 회전 변환
+M = cv2.getRotationMatrix2D(center, angle, scale)
+# Affine 변환하기
+dst = cv2.warpAffine(img, M, (cols,rows))
+plt.subplot(121),plt.imshow(img),plt.title('image')
+plt.subplot(122),plt.imshow(dst),plt.title('Affine')
+plt.show()

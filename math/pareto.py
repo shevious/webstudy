@@ -7,7 +7,13 @@ x = np.linspace(1,50,100)
 
 # the function, which is y = x^2 here
 alpha = 1.16 # 8:2
-alpha = 1.42096 # 7:3 y = x**(-alpha)
+#alpha = 1.42096 # 7:3 y = x**(-alpha)
+p = 0.3
+factor = 3
+alpha = np.log(p**factor)/(np.log(p**factor) - np.log((1-p)**factor))
+print(alpha)
+alpha = np.log(p)/(np.log(p) - np.log(1-p))
+print(alpha)
 
 '''
 # setting the axes at the centre
@@ -27,7 +33,7 @@ plt.plot(x,y, 'r')
 plt.show()
 '''
 
-N = 1000
+N = 100
 
 max_salary = 30
 
