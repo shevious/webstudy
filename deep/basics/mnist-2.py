@@ -55,9 +55,19 @@ NUM_CLASSES = 10
 x_train = x_train/255.
 x_test = x_test/255.
 
-#y_train = to_categorical(y_train, NUM_CLASSES)
-#y_test = to_categorical(y_test, NUM_CLASSES)
+y_train = to_categorical(y_train, NUM_CLASSES)
+y_test = to_categorical(y_test, NUM_CLASSES)
 print("converted y.shape = ", y_train.shape)
+
+plt.figure(figsize=(10,8))
+for i in range(25):
+    plt.subplot(5,5,i+1)
+    plt.xticks([])
+    plt.yticks([])
+    plt.grid(False)
+    plt.imshow(x_test[i], cmap=plt.cm.binary)
+    plt.xlabel(class_names[y_test[i].argmax()])
+plt.show()
 
 input_layer = Input((28, 28))
 
@@ -77,8 +87,8 @@ model = keras.Sequential([
 model.summary()
 
 model.compile(optimizer='adam',
-              loss='sparse_categorical_crossentropy',
-              #loss='categorical_crossentropy',
+              #loss='sparse_categorical_crossentropy',
+              loss='categorical_crossentropy',
               metrics=['accuracy'])
 model.fit(x_train, y_train, epochs=5)
 
@@ -94,3 +104,50 @@ model.fit(x_train, y_train,
 
 print('---- fit done -----')
 loss, accuracy = model.evaluate(x_test, y_test)
+
+predictions = model.predict(x_test)
+
+def plot_image(i, predictions_array, true_label, img):
+  predictions_array, true_label, img = predictions_array[i], true_label[i], img[i]
+  plt.grid(False)
+  plt.xticks([])
+  plt.yticks([])
+
+  plt.imshow(img, cmap=plt.cm.binary)
+
+  predicted_label = np.argmax(predictions_array)
+  if predicted_label == true_label:
+    color = 'blue'
+  else:
+    color = 'red'
+
+  plt.xlabel("{} {:2.0f}% ({})".format(class_names[predicted_label],
+                                100*np.max(predictions_array),
+                                class_names[true_label]),
+                                color=color)
+
+def plot_value_array(i, predictions_array, true_label):
+  predictions_array, true_label = predictions_array[i], true_label[i]
+  plt.grid(False)
+  plt.xticks([])
+  plt.yticks([])
+  thisplot = plt.bar(range(10), predictions_array, color="#777777")
+  plt.ylim([0, 1])
+  predicted_label = np.argmax(predictions_array)
+
+  thisplot[predicted_label].set_color('red')
+  thisplot[true_label].set_color('blue')
+
+
+# 처음 X 개의 테스트 이미지와 예측 레이블, 진짜 레이블을 출력합니다
+# 올바른 예측은 파랑색으로 잘못된 예측은 빨강색으로 나타냅니다
+num_rows = 5
+num_cols = 3
+num_images = num_rows*num_cols
+plt.figure(figsize=(2*2*num_cols, 2*num_rows-2))
+for i in range(num_images):
+  plt.subplot(num_rows, 2*num_cols, 2*i+1)
+  plot_image(i+720, predictions, test_labels, test_images)
+  plt.subplot(num_rows, 2*num_cols, 2*i+2)
+  plot_value_array(i+720, predictions, test_labels)
+plt.show()
