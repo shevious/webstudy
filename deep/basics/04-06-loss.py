@@ -22,6 +22,7 @@ ys = y
 #y = w*x + b
 lr = 0.1
 
+'''
 fig, ax = plt.subplots()
 ax.set_aspect('equal')
 ax.grid(True, which='both')
@@ -53,12 +54,19 @@ i = np.arange(50)
 import matplotlib
 ani = matplotlib.animation.FuncAnimation(fig, animate, 
                                          frames=i, interval=400)
-ani.save("algo.gif", writer="imagemagick")
+ani.save("loss.gif", writer="imagemagick")
+'''
 
-x = np.linspace(-0.5, 3, 20)
+x = np.linspace(-0.5, 4, 30)
 y = 0.68*(x**2) - 2.56*x + 2.6
 fig, ax = plt.subplots()
 ax.plot(x, y)
+x0 = -0.1
+a = 2*0.68*x0-2.56
+x = np.linspace(-0.5, 1, 10)
+y = a*(x - x0) + 0.68*(x0**2)-2.56*x0+2.6
+ax.plot(x, y, color='orange')
+ax.scatter(-0.1, 0.68*(x0**2)-2.56*x0+2.6, color='red')
 ax.set_aspect('equal')
 ax.grid(True, which='both')
 ax.axhline(y=0, color='k')
