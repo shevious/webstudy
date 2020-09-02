@@ -66,7 +66,15 @@ a = 2*0.68*x0-2.56
 x = np.linspace(-0.5, 1, 10)
 y = a*(x - x0) + 0.68*(x0**2)-2.56*x0+2.6
 ax.plot(x, y, color='orange')
-ax.scatter(-0.1, 0.68*(x0**2)-2.56*x0+2.6, color='red')
+ax.scatter(x0, 0.68*(x0**2)-2.56*x0+2.6, color='red')
+x = np.linspace(2, 4, 10)
+x0 = 3
+a = 2*0.68*x0-2.56
+y = a*(x - x0) + 0.68*(x0**2)-2.56*x0+2.6
+ax.scatter(x0, 0.68*(x0**2)-2.56*x0+2.6, color='red')
+ax.plot(x, y, color='green')
+x0 = 2.56/0.68/2
+ax.scatter(x0, 0.68*(x0**2)-2.56*x0+2.6, color='red')
 ax.set_aspect('equal')
 ax.grid(True, which='both')
 ax.axhline(y=0, color='k')

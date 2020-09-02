@@ -41,7 +41,7 @@ x1, x2 = np.meshgrid(x1, x2)
 x = np.vstack((x1.flatten(), x2.flatten())).T
 #print(x)
 
-y = ((x1-3)**2)*((x1+3)**2)+x1*x2 + ((x2-3)**2)*((0.5*(x2+3))**2)
+y = ((x1-3)**2)*((x1+3)**2) -20*x1+ ((x2-3)**2)*(((x2+3))**2)
 #y[y<0] = 0
 #y = 1/(1+np.exp(-y))
 y = y.reshape(len(x1), len(x2))

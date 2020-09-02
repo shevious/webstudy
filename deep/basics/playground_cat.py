@@ -36,7 +36,6 @@ plt.scatter(x_train[:,:1], x_train[:,1:],c=y_train, cmap=cm.coolwarm)
 plt.colorbar();
 plt.show()
 
-
 y_train = to_categorical(y_train, NUM_CLASSES)
 y_test = to_categorical(y_test, NUM_CLASSES)
 
@@ -45,20 +44,20 @@ input_layer = Input((2))
 x = Flatten()(input_layer)
 x = Dense(6, activation = 'relu')(x)
 x = Dense(4, activation = 'relu')(x)
-output_layer = Dense(NUM_CLASSES, activation = None)(x)
+#output_layer = Dense(NUM_CLASSES, activation = None)(x)
+output_layer = Dense(NUM_CLASSES, activation = 'softmax')(x)
 
 model = Model(input_layer, output_layer)
 
 model.summary()
 
-#opt = Adam(lr=0.0005)
-model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+model.compile(loss='categorical_crossentropy', optimizer=Adam(lr=0.0005), metrics=['accuracy'])
 #model.compile(loss='mse', optimizer='adam', metrics=['mse'])
 
 model.fit(x_train
           , y_train
-          , batch_size=200
-          , epochs=2000
+          #, batch_size=200
+          , epochs=1000
           , shuffle=True)
 
 print('---- fit done -----')
@@ -75,8 +74,8 @@ plt.colorbar();
 plt.show()
 
 # Make data.
-X = np.arange(0, 1, 0.05)
-Y = np.arange(0, 1, 0.05)
+X = np.arange(0, 1, 0.01)
+Y = np.arange(0, 1, 0.01)
 
 X, Y = np.meshgrid(X, Y)
 xy = np.vstack((X.flatten(), Y.flatten())).T
@@ -94,8 +93,7 @@ surf = ax.plot_surface(X, Y, Z, cmap=cm.coolwarm,
                        linewidth=0, antialiased=False)
 
 # Customize the z axis.
-#ax.set_zlim(-1.00, 1.00)
-ax.set_zlim(0.00, 1.00)
+ax.set_zlim(-1.00, 1.00)
 ax.zaxis.set_major_locator(LinearLocator(10))
 ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
 
