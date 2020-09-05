@@ -22,7 +22,6 @@ ys = y
 #y = w*x + b
 lr = 0.1
 
-'''
 fig, ax = plt.subplots()
 ax.set_aspect('equal')
 ax.grid(True, which='both')
@@ -55,7 +54,6 @@ import matplotlib
 ani = matplotlib.animation.FuncAnimation(fig, animate, 
                                          frames=i, interval=400)
 ani.save("loss.gif", writer="imagemagick")
-'''
 
 x = np.linspace(-0.5, 4, 30)
 y = 0.68*(x**2) - 2.56*x + 2.6
