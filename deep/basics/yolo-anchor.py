@@ -8,6 +8,7 @@ from matplotlib.patches import Rectangle
 anchors = anchors
 plt.figure()
 ax = plt.gca()
+ax.set_aspect('equal')
 ax.set_xlim(-500, 500)
 ax.set_ylim(-500, 500)
 for i in range(9):
