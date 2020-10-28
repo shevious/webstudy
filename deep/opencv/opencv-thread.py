@@ -21,6 +21,8 @@ class CountsPerSec:
 
     def countsPerSec(self):
         elapsed_time = (datetime.now() - self._start_time).total_seconds()
+        if (elapsed_time == 0):
+            return 0
         return self._num_occurrences / elapsed_time
 
 import argparse
