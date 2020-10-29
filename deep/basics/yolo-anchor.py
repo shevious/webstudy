@@ -8,11 +8,16 @@ from matplotlib.patches import Rectangle
 anchors = anchors
 plt.figure()
 ax = plt.gca()
-ax.set_aspect('equal')
 ax.set_xlim(-500, 500)
 ax.set_ylim(-500, 500)
 for i in range(9):
-  ax.add_patch(Rectangle((-anchors[i][0], -anchors[i][1]), 2*anchors[i][0], 2*anchors[i][1], fill=None, alpha=1, edgecolor='red'))
+  if i in range(0,3):
+    color = 'blue'
+  elif i in range(3,6):
+    color = 'green'
+  else:
+    color = 'red'
+  ax.add_patch(Rectangle((-anchors[i][0], -anchors[i][1]), 2*anchors[i][0], 2*anchors[i][1], fill=None, alpha=1, edgecolor=color))
   #print(anchors[i,0], anchors[i,1])
 plt.show()
 
