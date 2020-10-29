@@ -152,6 +152,6 @@ def threadBoth(source=0):
         video_shower.frame = frame
         cps.increment()
 
-#noThreading()
+noThreading()
 #threadVideoShow()
-threadBoth()
+#threadBoth()
