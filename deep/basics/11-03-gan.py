@@ -22,7 +22,7 @@ SAVE_FOLDER = 'gan_data'
 
 # !mkdir -p data/motorbike
 # https://storage.cloud.google.com/quickdraw_dataset/full/numpy_bitmap/motorbike.npy
-# !gdown --id 1xBCbjopxZCvzzTMuRKKaTpF-i2jLz7xa -O data/motorbike/full_numpy_bitmap_motorbike.npy
+# !gdown --id 1xBCbjopxZCvzzTMuRKKaTpF-i2jLz7xa -O gan_data/motorbike/full_numpy_bitmap_motorbike.npy
 
 def load_quickdraw(folder):
 
@@ -102,7 +102,7 @@ x = Conv2D(128, 5, padding="same", kernel_initializer=weight_init, name='generat
 x = BatchNormalization(momentum=0.9)(x)
 x = ReLU()(x)
 x = UpSampling2D()(x)
-x = Conv2D(128, 5, padding="same", kernel_initializer=weight_init, name='generator_conv_1')(x)
+x = Conv2D(64, 5, padding="same", kernel_initializer=weight_init, name='generator_conv_1')(x)
 x = BatchNormalization(momentum=0.9)(x)
 x = ReLU()(x)
 x = Conv2DTranspose(64, 5, strides=1, padding="same", kernel_initializer=weight_init, name='generator_conv_2')(x)
@@ -148,7 +148,8 @@ set_trainable(discriminator, True)
 
 gan = model
 
-mode = 'build'
+#mode = 'build'
+mode = 'load'
 
 if mode == 'build':
     gan.save(SAVE_FOLDER)
