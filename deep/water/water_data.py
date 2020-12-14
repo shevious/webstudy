@@ -23,12 +23,12 @@ from tensorflow.keras.optimizers import Adam
 import tensorflow as tf
 
 
-# In[610]:
+# In[795]:
 
 
 folder = 'data'
-#file_names = [['가평_2018.xlsx', '가평_2019.xlsx'], ['의암호_2018.xlsx', '의암호_2019.xlsx']]
-file_names = [['가평_2019.xlsx'], ['의암호_2019.xlsx']]
+file_names = [['가평_2018.xlsx', '가평_2019.xlsx'], ['의암호_2018.xlsx', '의암호_2019.xlsx']]
+#file_names = [['가평_2019.xlsx'], ['의암호_2019.xlsx']]
 
 day = 24*60*60
 year = (365.2425)*day
@@ -55,19 +55,19 @@ for loc in range(len(file_names)):
         
 
 
-# In[611]:
+# In[796]:
 
 
 df[0]
 
 
-# In[612]:
+# In[703]:
 
 
 df[1]
 
 
-# In[613]:
+# In[797]:
 
 
 # normalize data
@@ -81,13 +81,13 @@ for i in range(len(file_names)):
     df[i] = (df[i]-train_mean)/train_std
 
 
-# In[614]:
+# In[705]:
 
 
 df[0]
 
 
-# In[615]:
+# In[706]:
 
 
 train_df = df[0]
@@ -95,7 +95,7 @@ val_df = df[0]
 test_df = df[0]
 
 
-# In[616]:
+# In[798]:
 
 
 class WindowGenerator():
@@ -138,7 +138,7 @@ class WindowGenerator():
         f'Label column name(s): {self.label_columns}'])
 
 
-# In[617]:
+# In[799]:
 
 
 def split_window(self, features):
@@ -159,7 +159,7 @@ def split_window(self, features):
 WindowGenerator.split_window = split_window
 
 
-# In[618]:
+# In[800]:
 
 
 import matplotlib
@@ -171,7 +171,7 @@ font_location = '/usr/share/fonts/truetype/nanum/NanumGothicCoding.ttf'
 fprop = fm.FontProperties(fname=font_location)
 
 
-# In[619]:
+# In[801]:
 
 
 def plot(self, model=None, plot_col='T (degC)', max_subplots=3):
@@ -209,7 +209,7 @@ def plot(self, model=None, plot_col='T (degC)', max_subplots=3):
 WindowGenerator.plot = plot
 
 
-# In[620]:
+# In[802]:
 
 
 # not used
@@ -231,7 +231,7 @@ def make_dataset(self, data):
 #WindowGenerator.make_dataset = make_dataset
 
 
-# In[621]:
+# In[806]:
 
 
 w2 = WindowGenerator(input_width=6, label_width=1, shift=1,
@@ -239,7 +239,7 @@ w2 = WindowGenerator(input_width=6, label_width=1, shift=1,
 w2
 
 
-# In[622]:
+# In[810]:
 
 
 # Stack three slices, the length of the total window:
@@ -256,19 +256,19 @@ print(f'Inputs shape: {example_inputs.shape}')
 print(f'labels shape: {example_labels.shape}')
 
 
-# In[623]:
+# In[811]:
 
 
 w2.example = example_inputs, example_labels
 
 
-# In[624]:
+# In[812]:
 
 
 w2.plot(plot_col='수온')
 
 
-# In[625]:
+# In[813]:
 
 
 @property
@@ -300,7 +300,7 @@ WindowGenerator.test = test
 WindowGenerator.example = example
 
 
-# In[626]:
+# In[814]:
 
 
 def sample_batch_index(total, batch_size):
@@ -502,25 +502,25 @@ class MissData(object):
         print('miss_data file saved')
 
 
-# In[631]:
+# In[747]:
 
 
 norm_df = pd.concat(df,axis=0)
 n_data = norm_df.to_numpy()
-MissData.save(n_data, max_tseq=10)
+MissData.save(n_data, max_tseq=12)
 n_data
-n_data = n_data[0:100]
+#n_data = n_data[0:100]
 isnan = np.isnan(n_data).astype(int)
 isnan[50:100]
 miss = MissData(load_dir='save')
 tt = miss.make_missdata(n_data)
 tt = np.isnan(tt).astype(int)
-tt[0:50]
+tt[3000:3050]
 
 
 # **miss data 준비**
 
-# In[632]:
+# In[738]:
 
 
 norm_df = pd.concat(df,axis=0)
@@ -528,7 +528,7 @@ norm_data = norm_df.to_numpy()
 MissData.save(norm_data, max_tseq = 12)
 
 
-# In[633]:
+# In[926]:
 
 
 def interpolate(np_data, max_gap=3):
@@ -548,14 +548,15 @@ def interpolate(np_data, max_gap=3):
     for i in data.columns:
         mask[i] = (grp.groupby(i)['ones'].transform('count') < max_gap) | data[i].notnull()
     data = data.interpolate(method='polynomial', order=5, limit=max_gap, axis=0).bfill()[mask]
-    return data
+    return data.to_numpy()
+    #return data
     
 #filled_data = interpolate(norm_data, max_gap=3)
 #np.arange(0, 5, dtype=int)
 #['%d'%val for val in range(0,5)]
 
 
-# In[634]:
+# In[955]:
 
 
 from tensorflow import keras
@@ -602,7 +603,7 @@ class GainDataGenerator(keras.utils.Sequence):
             cum = start_seq.cumsum()
             cum += last_cum
             last_cum = np.max(cum)
-            cum[isany == 1] = np.nan
+            cum[isany] = 0
             cums.append(cum)
             
         
@@ -620,6 +621,9 @@ class GainDataGenerator(keras.utils.Sequence):
             self.miss_rate = miss_rate
             miss_data = self.miss.make_missdata(self.data, self.miss_rate)
             self.data_m = 1. - np.isnan(miss_data).astype(float)
+            
+            self.data_m_rand = binary_sampler(1-(miss_rate/10.), self.data.shape)
+            self.data_m[self.data_m_rand==0.] = 0.
         self.miss_pattern = miss_pattern
         
         # sequence data
@@ -628,6 +632,7 @@ class GainDataGenerator(keras.utils.Sequence):
         for i in range(1, last_cum+1):
             seq_len = (self.ids == i).sum()
             start_id = np.argmax(self.ids == i)
+            # possible data number in seqeunce
             time_len = seq_len - window_size + 1
             start_ids = np.arange(start_id, start_id+time_len)
             data_idx = np.append(data_idx, start_ids)
@@ -674,6 +679,8 @@ class GainDataGenerator(keras.utils.Sequence):
                 self.batch_idx = sample_batch_index(self.no, self.no)
                 miss_data = self.miss.make_missdata(self.data, self.miss_rate)
                 self.data_m = 1. - np.isnan(miss_data).astype(float)
+                self.data_m_rand = binary_sampler(1-self.miss_rate/10., self.data.shape)
+                self.data_m[self.data_m_rand==0.] = 0.
             idx1 = self.data_idx[i]
             idx2 = self.data_idx[i]+self.input_width
             #print(idx1, idx2)
@@ -701,31 +708,31 @@ class GainDataGenerator(keras.utils.Sequence):
 dgen = GainDataGenerator(df)
 
 
-# In[635]:
+# In[932]:
 
 
 df[1]
 
 
-# In[636]:
+# In[876]:
 
 
 it = iter(dgen)
 
 
-# In[637]:
+# In[877]:
 
 
 x,y = next(it)
 
 
-# In[638]:
+# In[878]:
 
 
 x.shape
 
 
-# In[663]:
+# In[880]:
 
 
 class GAIN(keras.Model):
@@ -1089,7 +1096,7 @@ class GAIN_cnn(keras.Model):
           print('model loadinng error')
 
 
-# In[501]:
+# In[934]:
 
 
 gain = GAIN(shape=(2,7))
@@ -1098,7 +1105,7 @@ gain.compile(loss=GAIN.RMSE_loss)
 #gain_cnn.compile(loss=GAIN.RMSE_loss)
 
 
-# In[502]:
+# In[935]:
 
 
 x = np.random.random((1,2,7))
@@ -1107,13 +1114,13 @@ m = np.random.random((1,2,7))
 #y = gain_cnn.generator([x, m])
 y = gain.generator.predict([x, m])
 print(y.shape)
-y = gain.discriminator([x,m])
+y = gain.discriminator.predict([x,m])
 y.shape
 print(x.shape)
 y = gain.predict(x)
 
 
-# In[503]:
+# In[884]:
 
 
 gain.fit(x,y)
@@ -1122,7 +1129,7 @@ gain.fit(x,y)
 
 # ## spam data gain 학습 테스트
 
-# In[664]:
+# In[958]:
 
 
 df_spam = pd.read_csv('data/spam.csv')
@@ -1133,21 +1140,21 @@ print(dg_spam.shape)
 x.shape, y.shape
 
 
-# In[665]:
+# In[959]:
 
 
 model = GAIN(shape=dg_spam.shape[1:])
 model.compile(loss=GAIN.RMSE_loss)
 
 
-# In[142]:
+# In[938]:
 
 
-model = GAIN_cnn(shape=dg_spam.shape[1:])
-model.compile(loss=GAIN.RMSE_loss)
+#model = GAIN_cnn(shape=dg_spam.shape[1:])
+#model.compile(loss=GAIN.RMSE_loss)
 
 
-# In[666]:
+# In[960]:
 
 
 model.fit(dg_spam, batch_size=128, epochs=10)
@@ -1155,7 +1162,7 @@ model.fit(dg_spam, batch_size=128, epochs=10)
 #model.fit(dg_spam, batch_size=4601, epochs=1)
 
 
-# In[667]:
+# In[961]:
 
 
 x = dg_spam.data.copy()
@@ -1170,7 +1177,7 @@ x.shape
 #model.fit(x,y)
 
 
-# In[668]:
+# In[962]:
 
 
 #model.load()
@@ -1178,7 +1185,7 @@ x.shape
 
 # **spam data rmse 측정**
 
-# In[669]:
+# In[963]:
 
 
 print(y.shape)
@@ -1186,7 +1193,7 @@ ret = model.evaluate(x, y)
 print(ret)
 
 
-# In[670]:
+# In[964]:
 
 
 x_input = x[0:4601]
@@ -1205,7 +1212,7 @@ rmse = np.sqrt(np.sum(diff**2)/float(n))
 print('rmse =', rmse)
 
 
-# In[671]:
+# In[965]:
 
 
 model.summary()
@@ -1213,7 +1220,7 @@ model.summary()
 
 # **spam data dataset으로 학습하기**
 
-# In[672]:
+# In[966]:
 
 
 ds = tf.data.Dataset.from_generator(
@@ -1228,7 +1235,7 @@ ds = tf.data.Dataset.from_generator(
 ).repeat(-1).prefetch(10)
 
 
-# In[673]:
+# In[967]:
 
 
 it = iter(ds)
@@ -1236,7 +1243,7 @@ x,y = next(it)
 x.shape, y.shape
 
 
-# In[674]:
+# In[968]:
 
 
 history = model.fit(ds, steps_per_epoch=10, epochs=200)
@@ -1244,7 +1251,7 @@ history = model.fit(ds, steps_per_epoch=10, epochs=200)
 
 # **학습성능 측정(rsme)**
 
-# In[675]:
+# In[948]:
 
 
 model.evaluate(ds, steps=50)
@@ -1252,7 +1259,7 @@ model.evaluate(ds, steps=50)
 
 # **학습 그래프**
 
-# In[676]:
+# In[949]:
 
 
 fig = plt.figure()
@@ -1276,7 +1283,7 @@ plt.show()
 
 # **데이터 준비**
 
-# In[677]:
+# In[969]:
 
 
 def make_dataset_gain(self, data):
@@ -1290,7 +1297,6 @@ def make_dataset_gain(self, data):
       miss_rate = 0.15,
       fill_no = 2,
   )
-  print('make_dataset_gain: dg.no = ', dg.no)
   self.dg = dg
   ds = tf.data.Dataset.from_generator(
       lambda: dg,
@@ -1307,7 +1313,7 @@ def make_dataset_gain(self, data):
 WindowGenerator.make_dataset = make_dataset_gain
 
 
-# In[678]:
+# In[970]:
 
 
 train_df = df_all
@@ -1315,7 +1321,7 @@ val_df = df_all
 test_df = df_all
 
 
-# In[679]:
+# In[971]:
 
 
 wide_window = WindowGenerator(
@@ -1323,22 +1329,24 @@ wide_window = WindowGenerator(
     #label_columns=['T (degC)']
 )
 
+
 wide_window
 
 
-# In[680]:
+# In[972]:
 
 
 df[0]
 
 
-# In[681]:
+# In[974]:
 
 
 wide_window.plot(plot_col='총질소')
+print('make_dataset_gain: dg.no = ', wide_window.dg.no)
 
 
-# In[682]:
+# In[975]:
 
 
 plt.figure(figsize=(9,10))
@@ -1353,7 +1361,7 @@ for i in range(8):
 plt.show()
 
 
-# In[683]:
+# In[976]:
 
 
 plt.figure(figsize=(9,10))
@@ -1378,21 +1386,21 @@ val_performance = {}
 performance = {}
 
 
-# In[684]:
+# In[977]:
 
 
 gain = GAIN(shape=wide_window.dg.shape[1:], gen_sigmoid=False)
 gain.compile(loss=GAIN.RMSE_loss)
 
 
-# In[655]:
+# In[978]:
 
 
-gain = GAIN_cnn(shape=wide_window.dg.shape[1:], gen_sigmoid=False, alpha=200.)
-gain.compile(loss=GAIN.RMSE_loss)
+#gain = GAIN_cnn(shape=wide_window.dg.shape[1:], gen_sigmoid=False, alpha=200.)
+#gain.compile(loss=GAIN.RMSE_loss)
 
 
-# In[685]:
+# In[979]:
 
 
 MAX_EPOCHS = 2000
@@ -1413,7 +1421,7 @@ def compile_and_fit(model, window, patience=10):
   return history
 
 
-# In[686]:
+# In[980]:
 
 
 history = compile_and_fit(gain, wide_window, patience=MAX_EPOCHS//5)
@@ -1431,7 +1439,7 @@ performance['Gain'] = gain.evaluate(wide_window.test, verbose=0)
 
 # **학습 loss history 출력**
 
-# In[687]:
+# In[913]:
 
 
 fig = plt.figure()
@@ -1453,7 +1461,7 @@ plt.show()
 
 # 성능 측정
 
-# In[688]:
+# In[914]:
 
 
 gain.evaluate(wide_window.test.repeat(), steps=100)
@@ -1461,7 +1469,7 @@ gain.evaluate(wide_window.test.repeat(), steps=100)
 
 # 샘플 prediction 출력
 
-# In[689]:
+# In[915]:
 
 
 wide_window.plot(gain, plot_col='클로로필-a')
@@ -1469,7 +1477,7 @@ wide_window.plot(gain, plot_col='클로로필-a')
 
 # ## 학습데이터 테스트
 
-# In[691]:
+# In[916]:
 
 
 total_n = wide_window.dg.data.shape[0]
@@ -1490,26 +1498,26 @@ y_true = y.reshape((-1,)+unit_shape)
 print('x.shape =', x.shape)
 
 
-# In[692]:
+# In[917]:
 
 
 y_pred = gain.predict(x)
 
 
-# In[693]:
+# In[918]:
 
 
 y_pred = y_pred.reshape((n, 13))
 x = x.reshape((n, 13))
 
 
-# In[694]:
+# In[919]:
 
 
 x.shape
 
 
-# In[695]:
+# In[920]:
 
 
 plt.figure()
@@ -1520,13 +1528,13 @@ plt.show()
 
 # ## 원본 데이터 테스트
 
-# In[696]:
+# In[921]:
 
 
 norm_df = pd.concat(df,axis=0)
 
 
-# In[697]:
+# In[922]:
 
 
 data = norm_df.to_numpy()
@@ -1548,20 +1556,20 @@ x_reshape = x.reshape((-1,)+unit_shape)
 print('x_reshape.shape =', x_reshape.shape)
 
 
-# In[698]:
+# In[923]:
 
 
 y_pred = gain.predict(x_reshape)
 
 
-# In[699]:
+# In[924]:
 
 
 y_pred = y_pred.reshape(y_true.shape)
 y_pred.shape
 
 
-# In[700]:
+# In[925]:
 
 
 n = 8
