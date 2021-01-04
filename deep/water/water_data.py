@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[705]:
 
 
 get_ipython().run_line_magic('matplotlib', 'widget')
 
 
-# In[2]:
+# In[3]:
 
 
 import pandas as pd
@@ -18,16 +18,80 @@ import datetime
 import matplotlib.pyplot as plt
 
 from tensorflow.keras.layers import Input, Concatenate, Dot, Add, ReLU, Activation
-from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import Dense, Flatten
 from tensorflow.keras.optimizers import Adam
 import tensorflow as tf
+from tensorflow import keras
 
 
-# In[795]:
+# In[701]:
+
+
+# missing date 추가
+folder = 'data'
+#file_names = [['가평_2016.xlsx','가평_2017.xlsx','가평_2018.xlsx', '가평_2019.xlsx'], ['의암호_2016.xlsx','의암호_2017.xlsx','의암호_2018.xlsx', '의암호_2019.xlsx']]
+file_name0 = '가평_2019.xlsx'
+#file_name1 = '해평_2016.xlsx'
+file_name1 = '도개_2019.xlsx'
+#file_name1 = '의암호_2017.xlsx'
+
+path = os.path.join(folder, file_name0)
+df0 = pd.read_excel(path)
+path = os.path.join(folder, file_name1)
+df1 = pd.read_excel(path)
+print(df0.shape)
+print(df1.shape)
+
+date_full = df0.iloc[:, 0]
+fill = { col: np.nan for col in df1.columns}
+
+j = 0
+for i in range(len(date_full)):
+    #print(i, date_full[i])
+    #print(df1.iloc[j])
+    #print(df1.iloc[j,0])
+    while df1.iloc[j, 0][5:10] == '02.29':
+        j += 1
+    if df1.iloc[j, 0][5:] != date_full[i][5:]:
+        print(i, date_full[i], j, df1.iloc[j,0])
+        fill_date = df1.iloc[j,0][:5] + date_full[i][5:]
+        #print(fill_date)
+        fill[df1.columns[0]] = fill_date
+        #print(fill)
+        line = pd.DataFrame(fill, index=[j-0.5])
+        df1 = df1.append(line, ignore_index=False)
+        df1 = df1.sort_index().reset_index(drop=True)
+    j += 1
+print(i+1,j)
+df1.to_excel(path, index=False)
+
+
+# In[836]:
+
+
+df1
+
+
+# In[703]:
+
+
+df1
+
+
+# In[704]:
+
+
+df0
+
+
+# **한강 데이터 로딩**
+
+# In[706]:
 
 
 folder = 'data'
-file_names = [['가평_2018.xlsx', '가평_2019.xlsx'], ['의암호_2018.xlsx', '의암호_2019.xlsx']]
+file_names = [['가평_2016.xlsx','가평_2017.xlsx','가평_2018.xlsx', '가평_2019.xlsx'], ['의암호_2016.xlsx','의암호_2017.xlsx','의암호_2018.xlsx', '의암호_2019.xlsx']]
+#file_names = [['해평_2016.xlsx','해평_2017.xlsx','해평_2018.xlsx', '해평_2019.xlsx'], ['도개_2016.xlsx','도개_2017.xlsx','도개_2018.xlsx', '도개_2019.xlsx']]
 #file_names = [['가평_2019.xlsx'], ['의암호_2019.xlsx']]
 
 day = 24*60*60
@@ -44,7 +108,7 @@ for loc in range(len(file_names)):
         print(file_names[loc][y])
         df_loc.append(pd.read_excel(path))
     df_full.append(pd.concat(df_loc))
-    df.append(df_full[loc].iloc[:, 2:11])
+    df.append(df_full[loc].iloc[:, [2,3,4,5,6,7,10]])
     date_time = pd.to_datetime(df_full[loc].iloc[:, 0], format='%Y.%m.%d %H:%M', utc=True)
     timestamp_s = date_time.map(datetime.datetime.timestamp)
     df[loc]['Day sin'] = np.sin(timestamp_s * (2 * np.pi / day))
@@ -55,19 +119,57 @@ for loc in range(len(file_names)):
         
 
 
-# In[796]:
+# **낙동강 해평-도개**
+
+# In[498]:
+
+
+folder = 'data'
+#file_names = [['가평_2016.xlsx','가평_2017.xlsx','가평_2018.xlsx', '가평_2019.xlsx'], ['의암호_2016.xlsx','의암호_2017.xlsx','의암호_2018.xlsx', '의암호_2019.xlsx']]
+file_names = [['해평_2016.xlsx','해평_2017.xlsx','해평_2018.xlsx', '해평_2019.xlsx'], ['도개_2016.xlsx','도개_2017.xlsx','도개_2018.xlsx', '도개_2019.xlsx']]
+#file_names = [['가평_2019.xlsx'], ['의암호_2019.xlsx']]
+
+day = 24*60*60
+year = (365.2425)*day
+
+df_full = []
+df = []
+
+for loc in range(len(file_names)):
+    
+    df_loc = []
+    for y in range(len(file_names[loc])):
+        path = os.path.join(folder, file_names[loc][y])
+        print(file_names[loc][y])
+        df_loc.append(pd.read_excel(path))
+    df_full.append(pd.concat(df_loc))
+    if loc == 0:
+        df.append(df_full[loc].iloc[:, 2:9])
+    else:
+        df.append(df_full[loc].iloc[:, [2,3,4,5,6,7,10]])
+    date_time = pd.to_datetime(df_full[loc].iloc[:, 0], format='%Y.%m.%d %H:%M', utc=True)
+    timestamp_s = date_time.map(datetime.datetime.timestamp)
+    df[loc]['Day sin'] = np.sin(timestamp_s * (2 * np.pi / day))
+    df[loc]['Day cos'] = np.cos(timestamp_s * (2 * np.pi / day))
+    df[loc]['Year sin'] = np.sin(timestamp_s * (2 * np.pi / year))
+    df[loc]['Year cos'] = np.cos(timestamp_s * (2 * np.pi / year))
+    df[loc] = df[loc].reset_index(drop=True)
+        
+
+
+# In[707]:
 
 
 df[0]
 
 
-# In[703]:
+# In[708]:
 
 
 df[1]
 
 
-# In[797]:
+# In[710]:
 
 
 # normalize data
@@ -81,13 +183,25 @@ for i in range(len(file_names)):
     df[i] = (df[i]-train_mean)/train_std
 
 
-# In[705]:
+# In[711]:
+
+
+print(df_all.shape)
+
+
+# In[712]:
+
+
+train_mean, train_std
+
+
+# In[713]:
 
 
 df[0]
 
 
-# In[706]:
+# In[714]:
 
 
 train_df = df[0]
@@ -95,7 +209,7 @@ val_df = df[0]
 test_df = df[0]
 
 
-# In[798]:
+# In[715]:
 
 
 class WindowGenerator():
@@ -138,7 +252,7 @@ class WindowGenerator():
         f'Label column name(s): {self.label_columns}'])
 
 
-# In[799]:
+# In[716]:
 
 
 def split_window(self, features):
@@ -159,7 +273,7 @@ def split_window(self, features):
 WindowGenerator.split_window = split_window
 
 
-# In[800]:
+# In[717]:
 
 
 import matplotlib
@@ -171,7 +285,7 @@ font_location = '/usr/share/fonts/truetype/nanum/NanumGothicCoding.ttf'
 fprop = fm.FontProperties(fname=font_location)
 
 
-# In[801]:
+# In[718]:
 
 
 def plot(self, model=None, plot_col='T (degC)', max_subplots=3):
@@ -209,7 +323,7 @@ def plot(self, model=None, plot_col='T (degC)', max_subplots=3):
 WindowGenerator.plot = plot
 
 
-# In[802]:
+# In[719]:
 
 
 # not used
@@ -231,7 +345,9 @@ def make_dataset(self, data):
 #WindowGenerator.make_dataset = make_dataset
 
 
-# In[806]:
+# **WindowGenerator 테스트**
+
+# In[ ]:
 
 
 w2 = WindowGenerator(input_width=6, label_width=1, shift=1,
@@ -239,7 +355,15 @@ w2 = WindowGenerator(input_width=6, label_width=1, shift=1,
 w2
 
 
-# In[810]:
+# In[ ]:
+
+
+w1 = WindowGenerator(input_width=24, label_width=1, shift=1,
+                     label_columns='수온')
+w1
+
+
+# In[ ]:
 
 
 # Stack three slices, the length of the total window:
@@ -256,19 +380,21 @@ print(f'Inputs shape: {example_inputs.shape}')
 print(f'labels shape: {example_labels.shape}')
 
 
-# In[811]:
+# In[ ]:
 
 
 w2.example = example_inputs, example_labels
 
 
-# In[812]:
+# In[ ]:
 
 
 w2.plot(plot_col='수온')
 
 
-# In[813]:
+# **Window Generator trainset 정의**
+
+# In[720]:
 
 
 @property
@@ -300,7 +426,7 @@ WindowGenerator.test = test
 WindowGenerator.example = example
 
 
-# In[814]:
+# In[721]:
 
 
 def sample_batch_index(total, batch_size):
@@ -318,7 +444,7 @@ def sample_batch_index(total, batch_size):
     return batch_idx
 
 
-# In[627]:
+# In[722]:
 
 
 def binary_sampler(p, shape):
@@ -336,7 +462,7 @@ def binary_sampler(p, shape):
   return binary_random_matrix
 
 
-# In[628]:
+# In[723]:
 
 
 def uniform_sampler(low, high, shape):
@@ -354,7 +480,7 @@ def uniform_sampler(low, high, shape):
   return np.random.uniform(low, high, size = shape)
 
 
-# In[629]:
+# In[724]:
 
 
 def normalization (data, parameters=None):
@@ -402,7 +528,7 @@ def normalization (data, parameters=None):
   return norm_data, norm_parameters
 
 
-# In[630]:
+# In[725]:
 
 
 class MissData(object):
@@ -502,7 +628,9 @@ class MissData(object):
         print('miss_data file saved')
 
 
-# In[747]:
+# **miss_data 테스트**
+
+# In[726]:
 
 
 norm_df = pd.concat(df,axis=0)
@@ -520,15 +648,15 @@ tt[3000:3050]
 
 # **miss data 준비**
 
-# In[738]:
+# In[727]:
 
 
 norm_df = pd.concat(df,axis=0)
 norm_data = norm_df.to_numpy()
-MissData.save(norm_data, max_tseq = 12)
+MissData.save(norm_data, max_tseq = 24)
 
 
-# In[926]:
+# In[728]:
 
 
 def interpolate(np_data, max_gap=3):
@@ -556,10 +684,8 @@ def interpolate(np_data, max_gap=3):
 #['%d'%val for val in range(0,5)]
 
 
-# In[955]:
+# In[731]:
 
-
-from tensorflow import keras
 
 class GainDataGenerator(keras.utils.Sequence):
     'Generates data for GAIN'
@@ -597,8 +723,10 @@ class GainDataGenerator(keras.utils.Sequence):
         for data in data_list:
             isnan = np.isnan(data)
             isany = np.any(isnan, axis=1)
+            #shift same as pd.shift(isany, fill_value=True)
             shifted = np.roll(isany, 1)
             shifted[0] = True # set to nan
+            
             start_seq = ((isany == False) & (shifted == True)).astype(int)
             cum = start_seq.cumsum()
             cum += last_cum
@@ -685,7 +813,7 @@ class GainDataGenerator(keras.utils.Sequence):
             idx2 = self.data_idx[i]+self.input_width
             #print(idx1, idx2)
         
-            Y_mb = self.data[idx1:idx2]
+            Y_mb = self.data[idx1:idx2].copy()
             X_mb = Y_mb.copy()
             M_mb = self.data_m[idx1:idx2]
             Z_mb = uniform_sampler(0, 0.01, shape=X_mb.shape)
@@ -693,6 +821,7 @@ class GainDataGenerator(keras.utils.Sequence):
             #H_mb_temp = binary_sampler(self.hint_rate, shape=X_mb.shape)
             #H_mb = M_mb * H_mb_temp
             X_mb[M_mb == 0] = np.nan
+            Y_mb[M_mb == 1] = np.nan
             x = np.append(x, [X_mb], axis=0)
             #m = np.append(m, [M_mb], axis=0)
             #h = np.append(h, [H_mb], axis=0)
@@ -708,31 +837,7 @@ class GainDataGenerator(keras.utils.Sequence):
 dgen = GainDataGenerator(df)
 
 
-# In[932]:
-
-
-df[1]
-
-
-# In[876]:
-
-
-it = iter(dgen)
-
-
-# In[877]:
-
-
-x,y = next(it)
-
-
-# In[878]:
-
-
-x.shape
-
-
-# In[880]:
+# In[730]:
 
 
 class GAIN(keras.Model):
@@ -818,7 +923,8 @@ class GAIN(keras.Model):
         #z = tf.keras.backend.random_uniform(shape=x.shape, minval=0.0, maxval=0.01)
         imputed_data = self.generator([x, m], training=False)
         #imputed_data = m*x + (1-m)*imputed_data
-        imputed_data = tf.where(isnan, imputed_data, np.nan)
+        #imputed_data = tf.where(isnan, imputed_data, np.nan)
+        imputed_data = tf.where(isnan, imputed_data, x)
         #imputed_data = keras.layers.Reshape(shape[1:])(imputed_data)
         #print('imputed_data.shape = ', imputed_data.shape)
         
@@ -837,7 +943,7 @@ class GAIN(keras.Model):
         return G_loss
         
     def RMSE_loss(y_true, y_pred):
-        isnan = tf.math.is_nan(y_pred)
+        isnan = tf.math.is_nan(y_true)
         M = tf.where(isnan, 1., 0.)
         return tf.sqrt(tf.reduce_sum(tf.where(isnan, 0., y_pred-y_true)**2)/tf.reduce_sum(1-M))
     
@@ -861,7 +967,7 @@ class GAIN(keras.Model):
         #H_temp = 1*keras.backend.cast((H_rand < self.hint_rate), dtype=tf.float32)
         H_temp = tf.where(H_rand < self.hint_rate, 1., 0.)
         
-        H = M * H_temp
+        H = M * H_temp + 0.5*(1-H_temp)
         #X = M * X + (1-M) * Z
         X = tf.where(isnan, Z, X)
         with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
@@ -889,7 +995,7 @@ class GAIN(keras.Model):
                  'rmse':         rmse,
                }
     
-    def save(self, save_dir='savedta'):
+    def save(self, save_dir='save'):
         if not os.path.exists(save_dir):
           os.makedirs(save_dir)
         disc_savefile = os.path.join(save_dir, 'discriminator.h5')
@@ -897,7 +1003,7 @@ class GAIN(keras.Model):
         self.discriminator.save_weights(disc_savefile)
         self.generator.save_weights(gen_savefile)
 
-    def load(self, save_dir='savedata'):
+    def load(self, save_dir='save'):
         disc_savefile = os.path.join(save_dir, 'discriminator.h5')
         gen_savefile = os.path.join(save_dir, 'generator.h5')
         try:
@@ -908,7 +1014,7 @@ class GAIN(keras.Model):
           print('model loadinng error')
 
 
-# In[579]:
+# In[464]:
 
 
 from tensorflow.keras.layers import Conv1D
@@ -1006,7 +1112,8 @@ class GAIN_cnn(keras.Model):
         #z = tf.keras.backend.random_uniform(shape=x.shape, minval=0.0, maxval=0.01)
         imputed_data = self.generator([x, m], training=False)
         #imputed_data = m*x + (1-m)*imputed_data
-        imputed_data = tf.where(isnan, imputed_data, np.nan)
+        #imputed_data = tf.where(isnan, imputed_data, np.nan)
+        imputed_data = tf.where(isnan, imputed_data, x)
         #imputed_data = keras.layers.Reshape(shape[1:])(imputed_data)
         #print('imputed_data.shape = ', imputed_data.shape)
         
@@ -1077,7 +1184,7 @@ class GAIN_cnn(keras.Model):
                  'rmse':         rmse,
                }
     
-    def save(self, save_dir='savedta'):
+    def save(self, save_dir='save'):
         if not os.path.exists(save_dir):
           os.makedirs(save_dir)
         disc_savefile = os.path.join(save_dir, 'discriminator.h5')
@@ -1085,7 +1192,7 @@ class GAIN_cnn(keras.Model):
         self.discriminator.save_weights(disc_savefile)
         self.generator.save_weights(gen_savefile)
 
-    def load(self, save_dir='savedata'):
+    def load(self, save_dir='save'):
         disc_savefile = os.path.join(save_dir, 'discriminator.h5')
         gen_savefile = os.path.join(save_dir, 'generator.h5')
         try:
@@ -1096,7 +1203,9 @@ class GAIN_cnn(keras.Model):
           print('model loadinng error')
 
 
-# In[934]:
+# **GAIN 모델 test**
+
+# In[420]:
 
 
 gain = GAIN(shape=(2,7))
@@ -1105,7 +1214,7 @@ gain.compile(loss=GAIN.RMSE_loss)
 #gain_cnn.compile(loss=GAIN.RMSE_loss)
 
 
-# In[935]:
+# In[ ]:
 
 
 x = np.random.random((1,2,7))
@@ -1120,7 +1229,7 @@ print(x.shape)
 y = gain.predict(x)
 
 
-# In[884]:
+# In[ ]:
 
 
 gain.fit(x,y)
@@ -1129,7 +1238,7 @@ gain.fit(x,y)
 
 # ## spam data gain 학습 테스트
 
-# In[958]:
+# In[732]:
 
 
 df_spam = pd.read_csv('data/spam.csv')
@@ -1140,35 +1249,36 @@ print(dg_spam.shape)
 x.shape, y.shape
 
 
-# In[959]:
+# In[745]:
 
 
 model = GAIN(shape=dg_spam.shape[1:])
 model.compile(loss=GAIN.RMSE_loss)
 
 
-# In[938]:
+# In[ ]:
 
 
 #model = GAIN_cnn(shape=dg_spam.shape[1:])
 #model.compile(loss=GAIN.RMSE_loss)
 
 
-# In[960]:
+# In[746]:
 
 
-model.fit(dg_spam, batch_size=128, epochs=10)
+model.fit(dg_spam, batch_size=128, epochs=30)
 #model.fit(x, y, batch_size=128)
 #model.fit(dg_spam, batch_size=4601, epochs=1)
 
 
-# In[961]:
+# In[ ]:
 
 
 x = dg_spam.data.copy()
-y = dg_spam.data
+y = dg_spam.data.copy()
 m = dg_spam.data_m
 x[m == 0] = np.nan
+y[m == 1] = np.nan
 x = x.reshape(x.shape[0], 1, x.shape[1])
 y = y.reshape(y.shape[0], 1, y.shape[1])
 x.shape
@@ -1177,7 +1287,7 @@ x.shape
 #model.fit(x,y)
 
 
-# In[962]:
+# In[ ]:
 
 
 #model.load()
@@ -1185,7 +1295,7 @@ x.shape
 
 # **spam data rmse 측정**
 
-# In[963]:
+# In[738]:
 
 
 print(y.shape)
@@ -1193,7 +1303,7 @@ ret = model.evaluate(x, y)
 print(ret)
 
 
-# In[964]:
+# In[739]:
 
 
 x_input = x[0:4601]
@@ -1202,7 +1312,7 @@ y_pred = model.predict(x_input)
 #print(x_input)
 #print(y_true)
 #print(y_pred)
-isnan = np.isnan(y_pred)
+isnan = np.isnan(y_true)
 diff = y_pred - y_true
 diff[isnan] = 0.
 #print(diff)
@@ -1212,7 +1322,7 @@ rmse = np.sqrt(np.sum(diff**2)/float(n))
 print('rmse =', rmse)
 
 
-# In[965]:
+# In[ ]:
 
 
 model.summary()
@@ -1220,7 +1330,7 @@ model.summary()
 
 # **spam data dataset으로 학습하기**
 
-# In[966]:
+# In[747]:
 
 
 ds = tf.data.Dataset.from_generator(
@@ -1235,7 +1345,7 @@ ds = tf.data.Dataset.from_generator(
 ).repeat(-1).prefetch(10)
 
 
-# In[967]:
+# In[748]:
 
 
 it = iter(ds)
@@ -1243,15 +1353,15 @@ x,y = next(it)
 x.shape, y.shape
 
 
-# In[968]:
+# In[749]:
 
 
-history = model.fit(ds, steps_per_epoch=10, epochs=200)
+history = model.fit(ds, steps_per_epoch=10, epochs=1000)
 
 
 # **학습성능 측정(rsme)**
 
-# In[948]:
+# In[750]:
 
 
 model.evaluate(ds, steps=50)
@@ -1259,7 +1369,7 @@ model.evaluate(ds, steps=50)
 
 # **학습 그래프**
 
-# In[949]:
+# In[751]:
 
 
 fig = plt.figure()
@@ -1283,7 +1393,7 @@ plt.show()
 
 # **데이터 준비**
 
-# In[969]:
+# In[828]:
 
 
 def make_dataset_gain(self, data):
@@ -1295,7 +1405,7 @@ def make_dataset_gain(self, data):
       normalize = False,
       miss_pattern = True,
       miss_rate = 0.15,
-      fill_no = 2,
+      fill_no = 3,
   )
   self.dg = dg
   ds = tf.data.Dataset.from_generator(
@@ -1313,7 +1423,7 @@ def make_dataset_gain(self, data):
 WindowGenerator.make_dataset = make_dataset_gain
 
 
-# In[970]:
+# In[753]:
 
 
 train_df = df_all
@@ -1321,32 +1431,57 @@ val_df = df_all
 test_df = df_all
 
 
-# In[971]:
+# In[832]:
 
 
 wide_window = WindowGenerator(
-    input_width=24*3, label_width=24*3, shift=0,
+    input_width=24*5, label_width=24*5, shift=0,
     #label_columns=['T (degC)']
 )
-
 
 wide_window
 
 
-# In[972]:
+# In[834]:
+
+
+_ = wide_window.train
+
+
+# In[835]:
+
+
+wide_window.dg
+
+
+# In[755]:
+
+
+wide_window.example[0].shape
+
+
+# **학습용 데이터 plotting**
+
+# In[756]:
 
 
 df[0]
 
 
-# In[974]:
+# In[757]:
 
 
-wide_window.plot(plot_col='총질소')
+df[1]
+
+
+# In[758]:
+
+
+wide_window.plot(plot_col='클로로필-a')
 print('make_dataset_gain: dg.no = ', wide_window.dg.no)
 
 
-# In[975]:
+# In[759]:
 
 
 plt.figure(figsize=(9,10))
@@ -1361,7 +1496,7 @@ for i in range(8):
 plt.show()
 
 
-# In[976]:
+# In[760]:
 
 
 plt.figure(figsize=(9,10))
@@ -1379,28 +1514,28 @@ plt.show()
 
 # ## 컴파일 및 학습
 
-# In[653]:
+# In[761]:
 
 
 val_performance = {}
 performance = {}
 
 
-# In[977]:
+# In[762]:
 
 
 gain = GAIN(shape=wide_window.dg.shape[1:], gen_sigmoid=False)
 gain.compile(loss=GAIN.RMSE_loss)
 
 
-# In[978]:
+# In[542]:
 
 
 #gain = GAIN_cnn(shape=wide_window.dg.shape[1:], gen_sigmoid=False, alpha=200.)
 #gain.compile(loss=GAIN.RMSE_loss)
 
 
-# In[979]:
+# In[763]:
 
 
 MAX_EPOCHS = 2000
@@ -1421,7 +1556,18 @@ def compile_and_fit(model, window, patience=10):
   return history
 
 
-# In[980]:
+# **모델 불러오기(사전 학습데이터)**
+
+# In[580]:
+
+
+#model.fit를 사용하지 않을 때에는 학습 데이터 로딩
+gain.load(save_dir='save')
+
+
+# **모델 학습**
+
+# In[764]:
 
 
 history = compile_and_fit(gain, wide_window, patience=MAX_EPOCHS//5)
@@ -1437,9 +1583,15 @@ performance['Gain'] = gain.evaluate(wide_window.test, verbose=0)
 #gain.compile()
 
 
+# In[478]:
+
+
+gain.save(save_dir='save')
+
+
 # **학습 loss history 출력**
 
-# In[913]:
+# In[765]:
 
 
 fig = plt.figure()
@@ -1461,7 +1613,7 @@ plt.show()
 
 # 성능 측정
 
-# In[914]:
+# In[766]:
 
 
 gain.evaluate(wide_window.test.repeat(), steps=100)
@@ -1469,7 +1621,7 @@ gain.evaluate(wide_window.test.repeat(), steps=100)
 
 # 샘플 prediction 출력
 
-# In[915]:
+# In[767]:
 
 
 wide_window.plot(gain, plot_col='클로로필-a')
@@ -1477,7 +1629,7 @@ wide_window.plot(gain, plot_col='클로로필-a')
 
 # ## 학습데이터 테스트
 
-# In[916]:
+# In[ ]:
 
 
 total_n = wide_window.dg.data.shape[0]
@@ -1492,34 +1644,36 @@ x = wide_window.dg.data[0:n].copy()
 y = wide_window.dg.data[0:n].copy()
 m = wide_window.dg.data_m[0:n]
 x[m == 0] = np.nan
+y[m == 1] = np.nan
 print('x.shape =', x.shape)
 x = x.reshape((-1,)+unit_shape)
 y_true = y.reshape((-1,)+unit_shape)
 print('x.shape =', x.shape)
 
 
-# In[917]:
+# In[ ]:
 
 
 y_pred = gain.predict(x)
 
 
-# In[918]:
+# In[ ]:
 
 
 y_pred = y_pred.reshape((n, 13))
 x = x.reshape((n, 13))
 
 
-# In[919]:
+# In[ ]:
 
 
 x.shape
 
 
-# In[920]:
+# In[ ]:
 
 
+y_pred[~np.isnan(x)] = np.nan
 plt.figure()
 plt.plot(x[:, 8])
 plt.plot(y_pred[:, 8])
@@ -1528,48 +1682,113 @@ plt.show()
 
 # ## 원본 데이터 테스트
 
-# In[921]:
+# **원본데이터 shape**
+# ```py
+# print(norm_df.shape)
+# (70068,13)
+# (rows, columns)
+# ```
+# 데이터 generator의 shape
+# ```py
+# print(wide_window.dg.shape)
+# (128, 120, 13)
+# (batch_size, input_width, column)
+# ```
+# ```py
+# total_no = 70068
+# dim = 120*13
+# n = total_no//dim*dim
+# x.shape
+# (68640, 13)
+# x.reshape( (-1, 120, 13) )
+# ```
+
+# In[ ]:
+
+
+
+
+
+# In[768]:
 
 
 norm_df = pd.concat(df,axis=0)
 
 
-# In[922]:
+# In[769]:
 
 
 data = norm_df.to_numpy()
-x = data[0:n].copy()
-y_true = data[0:n].copy()
-isnan = np.isnan(x)
-x[isnan] = np.nan
 
 total_n = wide_window.dg.data.shape[0]
 print(total_n)
 unit_shape = wide_window.dg.shape[1:]
 print(unit_shape)
-dim = np.prod(wide_window.dg.shape[1:]).astype(int)
+#dim = np.prod(wide_window.dg.shape[1:]).astype(int)
+dim = wide_window.dg.shape[1]
 print(dim)
 n = (total_n//dim)*dim
+
+x = data[0:n].copy()
+y_true = data[0:n].copy()
+
+#x = interpolate(x, max_gap=3)
 
 print('x.shape =', x.shape)
 x_reshape = x.reshape((-1,)+unit_shape)
 print('x_reshape.shape =', x_reshape.shape)
+isnan = np.isnan(x_reshape)
+print(isnan.sum())
+print('y_true.shape=', y_true.shape)
+isnan = np.isnan(y_true)
+print(isnan.sum())
+
+x_remain = data[-wide_window.dg.shape[1]:].copy()
+x_remain_reshape = x_remain.reshape((-1,)+unit_shape)
+x_remain_reshape.shape
 
 
-# In[923]:
+# In[770]:
+
+
+# zero loss is normal because there is no ground truth in the real dataset
+gain.evaluate(x_reshape, y_true.reshape((-1,)+unit_shape))
+
+
+# In[771]:
 
 
 y_pred = gain.predict(x_reshape)
+y_remain_pred = gain.predict(x_remain_reshape)
 
 
-# In[924]:
+# In[772]:
+
+
+print(total_n)
+print(n)
+print(total_n-n)
+
+
+# In[773]:
 
 
 y_pred = y_pred.reshape(y_true.shape)
-y_pred.shape
+y_remain_pred = y_remain_pred.reshape(x_remain.shape)
+print(y_pred.shape, y_remain_pred.shape)
+y_pred = np.append(y_pred, y_remain_pred[-(total_n-n):], axis=0)
+print(y_pred.shape)
 
 
-# In[925]:
+# 그림용으로 nan 채우기
+
+# In[774]:
+
+
+y_pred[~np.isnan(data)] = np.nan
+
+
+# In[775]:
 
 
 n = 8
@@ -1582,22 +1801,889 @@ for i in range(n):
 plt.show()
 
 
+# In[776]:
+
+
+total_n = wide_window.dg.data.shape[0]
+print(total_n)
+unit_shape = wide_window.dg.shape[1:]
+print('unit_shape=', unit_shape)
+time_seq = unit_shape[0]
+print(time_seq)
+n = (total_n//time_seq)*time_seq
+print('n=', n)
+
+gans = []
+oris = []
+for i in range(len(df)):
+    x = df[i].to_numpy()
+    total_n = x.shape[0]
+    n = (total_n//time_seq)*time_seq
+    x = x[0:n]
+    x_block = x.reshape((-1,)+unit_shape)
+    y = gain.predict(x_block)
+    y_gan = y.reshape(x.shape)
+    
+    # cut off sin, cos data
+    if (i > 0):
+        x = x[:, :-4]
+        y_gan = y_gan[:, :-4]
+    gans.append(y_gan)
+    oris.append(x)
+print(x.shape)
+print(y_gan.shape)
+
+
+# In[777]:
+
+
+# idx번째 데이터 출력
+idx = 0
+y_plt = gans[idx].copy()
+y_plt[~np.isnan(oris[idx])] = np.nan
+n = 8
+plt.figure(figsize=(9,20))
+for i in range(n):
+    #plt.subplot('%d1%d'%(n,i))
+    plt.subplot(811+i)
+    plt.plot(oris[idx][:, i])
+    plt.plot(y_plt[:, i])
+plt.show()
+
+
+# **self data 생성(가평)**
+
+# In[ ]:
+
+
+total_no = oris[0].shape[0]
+train_no = int(total_no*0.7)
+
+train_slice = slice(0, train_no)
+val_slice = slice(train_no, None)
+test_slice = slice(0, None)
+
+train_df = pd.DataFrame(gans[0][train_slice])
+val_df = pd.DataFrame(gans[0][val_slice])
+test_df = pd.DataFrame(gans[0][test_slice])
+
+train_ori_df = pd.DataFrame(oris[0][train_slice])
+val_ori_df = pd.DataFrame(oris[0][val_slice])
+test_ori_df = pd.DataFrame(oris[0][test_slice])
+
+num_features = train_df.shape[1]
+out_num_features = num_features
+
+
+# **source-target data creation (target-가평, source-의암호)**
+
+# In[778]:
+
+
+ori = np.concatenate(oris, axis=1)
+gan = np.concatenate(gans, axis=1)
+print(oris[0].shape, gans[0].shape)
+print(oris[1].shape, gans[1].shape)
+print(ori.shape, gan.shape)
+
+total_no = ori.shape[0]
+train_no = int(total_no*0.7)
+
+train_slice = slice(0, train_no)
+val_slice = slice(train_no, None)
+test_slice = slice(0, None)
+
+train_df = pd.DataFrame(gan[train_slice])
+val_df = pd.DataFrame(gan[val_slice])
+test_df = pd.DataFrame(gan[test_slice])
+
+train_ori_df = pd.DataFrame(ori[train_slice])
+val_ori_df = pd.DataFrame(ori[val_slice])
+test_ori_df = pd.DataFrame(ori[test_slice])
+
+num_features = train_df.shape[1]
+#out_num_features = oris[0].shape[1]-4
+out_features = [6]
+out_num_features = len(out_features)
+out_num_features
+
+
+# In[779]:
+
+
+class WaterDataGenerator(keras.utils.Sequence):
+    'Generates data for water'
+    def __init__(self,
+                 imputed_data,
+                 ori_data = None,
+                 batch_size=32,
+                 input_width=24*7,
+                 label_width=24*3,
+                 shift=24*3,
+                 skip_time = None,
+                 shuffle = True,
+                 out_features = None,
+                 out_num_features = None,
+                ):
+        'Initialization'
+        self.window_size = input_width+shift
+        self.total_no = imputed_data.shape[0]
+        self.data = imputed_data
+        self.input_width = input_width
+        self.label_width = label_width
+        self.batch_size = batch_size
+        self.input_shape = (batch_size, input_width, self.data.shape[1])
+        self.out_num_features = out_num_features
+        if out_features:
+            self.out_features = out_features
+        else:
+            self.out_features = [i for i in range(out_num_features)]
+        self.label_shape = (batch_size, label_width, self.out_num_features)
+        if (skip_time):
+            # TO-DO
+            self.no = self.total_no - self.window_size
+            self.data_idx = np.arange(0, self.no)
+        else:
+            self.no = self.total_no - self.window_size
+            self.data_idx = np.arange(0, self.no)
+            
+        if shuffle:
+            self.batch_idx = np.random.permutation(self.no)
+        else:
+            self.batch_idx = np.arange(0, self.no)
+        self.batch_id = 0
+        
+        
+    def __len__(self):
+        'Denotes the number of batches per epoch'
+        #return int(128/self.batch_size)
+        #return 2
+        return 1
+
+    def __getitem__(self, index):
+        'Generate one batch of data'
+        #print('index =', index)
+        #print('self.no =', self.no)
+        #print('self.total_no =', self.total_no)
+        #print('self.batch_id =', self.batch_id)
+        # Sample batch
+        label_width = self.label_width
+        batch_idx = self.batch_idx
+        
+        x = np.empty((0, self.input_width, self.data.shape[1]))
+        y = np.empty((0, self.label_width, self.out_num_features))
+        for cnt in range(0, self.batch_size):
+            i = self.batch_id
+            self.batch_id += 1
+            idx1 = self.data_idx[batch_idx[i]]
+            idx2 = idx1 + self.input_width
+            
+            X = self.data[idx1:idx2]
+            
+            idx1 = self.data_idx[batch_idx[i]] + self.window_size - label_width
+            idx2 = idx1 + label_width
+            
+            #Y = self.data[idx1:idx2,:,:out_num_features]
+            Y = self.data.iloc[idx1:idx2, self.out_features]
+            #print('Y.shape = ', Y.shape)
+            #Y = Y.iloc[:,:out_num_features]
+            
+            self.batch_id %= self.no
+            
+            x = np.append(x, [X], axis = 0)
+            y = np.append(y, [Y], axis = 0)
+            
+        return x, y
+    
+    def on_epoch_end(self):
+        'Updates indexes after each epoch'
+        return
+
+
+# In[780]:
+
+
+def make_dataset_water(self, data):
+  dg = WaterDataGenerator(
+      data,
+      batch_size = 128,
+      input_width = self.input_width,
+      label_width = self.label_width,
+      shift = self.label_width,
+      out_features = out_features,
+      out_num_features = out_num_features,
+  )
+  #self.dg = dg
+  ds = tf.data.Dataset.from_generator(
+      lambda: dg,
+      output_types=(tf.float32, tf.float32),
+      output_shapes=(
+        dg.input_shape,
+        dg.label_shape
+        #[batch_size, train_generator.dim],
+        #[batch_size, train_generator.dim],
+      )
+  )
+  return ds
+
+WindowGenerator.make_dataset = make_dataset_water
+
+
+# **WaterDataGenerator 테스트**
+
+# In[341]:
+
+
+wdg = WaterDataGenerator(train_df,
+                         batch_size=128,
+                         input_width = 24*7,
+                         label_width = OUT_STEPS,
+                         shift = OUT_STEPS,
+                         out_num_features = out_num_features
+                        )
+
+
+# In[247]:
+
+
+it = iter(wdg)
+
+
+# In[248]:
+
+
+x,y = next(it)
+x.shape, y.shape
+
+
+# **Water Dataset**
+
+# In[781]:
+
+
+def plot2(self, model=None, plot_col=0, max_subplots=3, plot_out_col=0):
+  inputs, labels = self.example
+  plt.figure(figsize=(10, 8))
+  plot_col_index = self.column_indices[plot_col]
+  plot_out_col_index = self.column_indices[plot_out_col]
+  max_n = min(max_subplots, len(inputs))
+  for n in range(max_n):
+    plt.subplot(3, 1, n+1)
+    plt.ylabel(f'{plot_col} [normed]', fontproperties=fprop)
+    plt.plot(self.input_indices, inputs[n, :, plot_col_index],
+             label='Inputs', marker='.', zorder=-10)
+
+    if self.label_columns:
+      label_col_index = self.label_columns_indices.get(plot_col, None)
+      label_out_col_index = self.label_columns_indices.get(plot_out_col, None)
+    else:
+      label_col_index = plot_col_index
+      label_out_col_index = plot_out_col_index
+
+    if label_col_index is None:
+      continue
+
+    plt.plot(self.label_indices, labels[n, :, label_out_col_index],
+                label='Labels', c='#2ca02c')
+    if model is not None:
+      predictions = model(inputs)
+      plt.plot(self.label_indices, predictions[n, :, label_out_col_index],
+                  marker=None, label='Predictions',
+                  c='#ff7f0e')
+
+    if n == 0:
+      plt.legend()
+
+  plt.xlabel('Time [h]')
+
+WindowGenerator.plot2 = plot2
+
+
+# In[782]:
+
+
+OUT_STEPS = 24*5
+multi_window = WindowGenerator(input_width=24*7,
+                               label_width=OUT_STEPS,
+                               shift=OUT_STEPS,
+                               train_df=train_df,
+                               val_df=val_df,
+                               test_df=test_df,
+                               )
+
+multi_window.plot2(plot_col=out_features[0])
+multi_window
+
+
+# In[783]:
+
+
+multi_window.plot2(plot_col=out_features[0])
+
+
+# In[784]:
+
+
+it = iter(multi_window.train)
+x, y = next(it)
+print(x.shape, y.shape)
+#x, y = next(it#)
+
+
+# **Baseline model**
+
+# In[785]:
+
+
+class MultiStepLastBaseline(tf.keras.Model):
+  def call(self, inputs):
+    #print(inputs[:, -1:, 0:1])
+    #return tf.tile(inputs[:, -1:, :out_num_features], [1, OUT_STEPS, 1])
+    return tf.tile(inputs[:, -1:, (out_features[0]):(out_features[0]+1)], [1, OUT_STEPS, 1])
+    #return tf.tile(inputs[:, -1:, out_features[0]:(out_features[1]+1)], [1, OUT_STEPS, 1])
+
+last_baseline = MultiStepLastBaseline()
+last_baseline.compile(loss=tf.losses.MeanSquaredError(),
+                      metrics=[tf.metrics.MeanAbsoluteError()])
+
+#multi_val_performance = {}
+#multi_performance = {}
+
+multi_val_performance['Last'] = last_baseline.evaluate(multi_window.val.repeat(-1), steps=100)
+multi_performance['Last'] = last_baseline.evaluate(multi_window.test.repeat(-1), verbose=0, steps=100)
+print('val performance =', multi_val_performance['Last'])
+print('test performance = ', multi_performance['Last'])
+multi_window.plot2(last_baseline, plot_col=out_features[0], plot_out_col=0)
+
+
+# **Water Data Generator test**
+
+# In[67]:
+
+
+wdg = WaterDataGenerator(
+    train_df,
+    batch_size = 32,
+    input_width = 7,
+    label_width = 3,
+    shift = 3,
+)
+
+
+# In[ ]:
+
+
+it = iter(wdg)
+x, y = next(it)
+x.shape, y.shape
+
+
+# In[ ]:
+
+
+last_baseline.evaluate(wdg)
+
+
+# **학습**
+
+# In[786]:
+
+
+MAX_EPOCHS = 400
+
+def compile_and_fit(model, window, patience=1000):
+  early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss',
+                                                    patience=patience,
+                                                    mode='min')
+
+  model.compile(loss=tf.losses.MeanSquaredError(),
+                optimizer=tf.optimizers.Adam(),
+                metrics=[tf.metrics.MeanAbsoluteError()])
+  #model.compile(loss=GAIN.RMSE_loss)
+
+  history = model.fit(window.train, epochs=MAX_EPOCHS,
+                      validation_data=window.val,
+                      callbacks=[early_stopping])
+  return history
+
+
+# In[787]:
+
+
+import IPython
+multi_linear_model = tf.keras.Sequential([
+    # Take the last time-step.
+    # Shape [batch, time, features] => [batch, 1, features]
+    tf.keras.layers.Lambda(lambda x: x[:, -1:, :]),
+    # Shape => [batch, 1, out_steps*features]
+    tf.keras.layers.Dense(OUT_STEPS*out_num_features,
+                          kernel_initializer=tf.initializers.zeros),
+    # Shape => [batch, out_steps, features]
+    tf.keras.layers.Reshape([OUT_STEPS, out_num_features])
+])
+
+history = compile_and_fit(multi_linear_model, multi_window)
+
+#IPython.display.clear_output()
+multi_val_performance['Linear'] = multi_linear_model.evaluate(multi_window.val.repeat(-1), steps=100)
+multi_performance['Linear'] = multi_linear_model.evaluate(multi_window.test.repeat(-1), verbose=0, steps=100)
+#multi_window.plot(multi_linear_model, plot_col=0)
+print('val performance =', multi_val_performance['Linear'])
+print('test performance = ', multi_performance['Linear'])
+
+
+# In[788]:
+
+
+multi_performance['Linear'] = multi_linear_model.evaluate(multi_window.test.repeat(-1), verbose=0, steps=100)
+
+
+# In[789]:
+
+
+def plot_history(history):
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.plot(history.history['loss'], label='loss')
+    ax.plot(history.history['mean_absolute_error'], label='mae')
+    ax.plot(history.history['val_loss'], label='val_loss')
+    ax.plot(history.history['val_mean_absolute_error'], label='val_mae')
+    #plt.legend(history.history.keys(), loc='upper right')
+    #ax.legend(loc='upper center')
+    ax.legend()
+    ax.set_xlabel("epochs")
+    ax.set_ylabel("loss")
+    plt.show()
+
+
+# In[790]:
+
+
+plot_history(history)
+
+
+# In[176]:
+
+
+multi_window._result=None
+
+
+# In[791]:
+
+
+multi_window.plot2(multi_linear_model, plot_col=out_features[0])
+
+
+# **muti_step dense**
+
+# In[792]:
+
+
+multi_dense_model = tf.keras.Sequential([
+    # Take the last time step.
+    # Shape [batch, time, features] => [batch, 1, features]
+    tf.keras.layers.Lambda(lambda x: x[:, -1:, :]),
+    # Shape => [batch, 1, dense_units]
+    #tf.keras.layers.Dense(512, activation='relu'),
+    tf.keras.layers.Dense(1024, activation='relu'),
+    # Shape => [batch, out_steps*features]
+    tf.keras.layers.Dense(OUT_STEPS*out_num_features,
+                          kernel_initializer=tf.initializers.zeros),
+    # Shape => [batch, out_steps, features]
+    tf.keras.layers.Reshape([OUT_STEPS, out_num_features])
+])
+
+
+# In[666]:
+
+
+multi_dense_model = tf.keras.Sequential([
+    # Take the last time step.
+    # Shape [batch, time, features] => [batch, 1, features]
+    tf.keras.layers.Flatten(),
+    # Shape => [batch, 1, dense_units]
+    #tf.keras.layers.Dense(512, activation='relu'),
+    tf.keras.layers.Dense(2048, activation='relu'),
+    tf.keras.layers.Dense(2048, activation='relu'),
+    tf.keras.layers.Dropout(0.5),
+    # Shape => [batch, out_steps*features]
+    tf.keras.layers.Dense(OUT_STEPS*out_num_features,
+                          kernel_initializer=tf.initializers.zeros),
+    # Shape => [batch, out_steps, features]
+    tf.keras.layers.Reshape([OUT_STEPS, out_num_features])
+])
+
+
+# In[793]:
+
+
+history = compile_and_fit(multi_dense_model, multi_window)
+multi_val_performance['Dense'] = multi_dense_model.evaluate(multi_window.val.repeat(-1), steps=100)
+multi_performance['Dense'] = multi_dense_model.evaluate(multi_window.test.repeat(-1), verbose=1, steps=100)
+print('val performance =', multi_val_performance['Dense'])
+print('test performance = ', multi_performance['Dense'])
+
+
+# In[794]:
+
+
+plot_history(history)
+
+
+# In[795]:
+
+
+multi_window.plot2(multi_dense_model, plot_col=out_features[0])
+
+
+# **Conv model**
+
+# In[796]:
+
+
+CONV_WIDTH = 7
+CONV_LAYER_NO = 1
+multi_conv_model = tf.keras.Sequential([
+    # Shape [batch, time, features] => [batch, CONV_WIDTH, features]
+    tf.keras.layers.Lambda(lambda x: x[:, -(CONV_WIDTH*CONV_LAYER_NO-CONV_LAYER_NO+1):, :]),
+] + [
+    # Shape => [batch, 1, conv_units]
+    tf.keras.layers.Conv1D(1024, activation='relu', kernel_size=(CONV_WIDTH)) for i in range(CONV_LAYER_NO)
+] + [
+    # Shape => [batch, 1,  out_steps*features]
+    tf.keras.layers.Dense(OUT_STEPS*out_num_features,
+                          kernel_initializer=tf.initializers.zeros),
+    # Shape => [batch, out_steps, features]
+    tf.keras.layers.Reshape([OUT_STEPS, out_num_features])
+])
+
+
+# In[ ]:
+
+
+CONV_WIDTH = 3
+CONV_LAYER_NO = 6
+multi_conv_model = tf.keras.Sequential([
+    # Shape [batch, time, features] => [batch, CONV_WIDTH, features]
+    tf.keras.layers.Lambda(lambda x: x[:, -(CONV_WIDTH*CONV_LAYER_NO-CONV_LAYER_NO+1):, :]),
+] + [
+    # Shape => [batch, 1, conv_units]
+    tf.keras.layers.Conv1D(1024, activation='relu', kernel_size=(CONV_WIDTH)) for i in range(CONV_LAYER_NO)
+] + [
+    # Shape => [batch, 1,  out_steps*features]
+    tf.keras.layers.Dense(OUT_STEPS*num_features,
+                          kernel_initializer=tf.initializers.zeros),
+    # Shape => [batch, out_steps, features]
+    tf.keras.layers.Reshape([OUT_STEPS, num_features])
+])
+
+
+# In[ ]:
+
+
+CONV_WIDTH = 11
+CONV_LAYER_NO = 3
+multi_conv_model = tf.keras.Sequential([
+    # Shape [batch, time, features] => [batch, CONV_WIDTH, features]
+    tf.keras.layers.Lambda(lambda x: x[:, -(CONV_WIDTH*CONV_LAYER_NO-CONV_LAYER_NO+1):, :]),
+] + [
+    # Shape => [batch, 1, conv_units]
+    tf.keras.layers.Conv1D(1024, activation='relu', kernel_size=(CONV_WIDTH)) for i in range(CONV_LAYER_NO)
+] + [
+    # Shape => [batch, 1,  out_steps*features]
+    tf.keras.layers.Dense(OUT_STEPS*num_features,
+                          kernel_initializer=tf.initializers.zeros),
+    # Shape => [batch, out_steps, features]
+    tf.keras.layers.Reshape([OUT_STEPS, num_features])
+])
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+CONV_WIDTH = 11
+#CONV_LAYER_NO = 3
+multi_conv_model = tf.keras.Sequential([
+    keras.layers.Conv1D(256, activation='relu', kernel_size=(CONV_WIDTH)),
+    keras.layers.Conv1D(256, activation='relu', kernel_size=(CONV_WIDTH)),
+    keras.layers.MaxPooling1D(pool_size=2),
+    keras.layers.Conv1D(256, activation='relu', kernel_size=(CONV_WIDTH)),
+    keras.layers.MaxPooling1D(pool_size=2),
+    keras.layers.Conv1D(512, activation='relu', kernel_size=(CONV_WIDTH)),
+    keras.layers.MaxPooling1D(pool_size=2),
+    keras.layers.Conv1D(1024, activation='relu', kernel_size=(CONV_WIDTH)),
+    #keras.layers.MaxPooling1D(pool_size=2),
+    #keras.layers.Conv1D(1024, activation='relu', kernel_size=(CONV_WIDTH)),
+    #keras.layers.MaxPooling1D(pool_size=2),
+    #keras.layers.Conv1D(1024, activation='relu', kernel_size=(CONV_WIDTH)),
+    #keras.layers.MaxPooling1D(pool_size=2),
+    #keras.layers.Conv1D(1024, activation='relu', kernel_size=(CONV_WIDTH)),
+    keras.layers.GlobalAveragePooling1D(),
+    #keras.layers.Dropout(0.5),
+    
+    # Shape => [batch, 1,  out_steps*features]
+    tf.keras.layers.Dense(OUT_STEPS*num_features,
+                          kernel_initializer=tf.initializers.zeros),
+    # Shape => [batch, out_steps, features]
+    tf.keras.layers.Reshape([OUT_STEPS, num_features])
+])
+
+
+# In[ ]:
+
+
+CONV_WIDTH = 11
+#CONV_LAYER_NO = 3
+multi_conv_model = tf.keras.Sequential([
+    keras.layers.Conv1D(256, activation='relu', kernel_size=(CONV_WIDTH)),
+    keras.layers.Conv1D(256, strides=2, activation='relu', kernel_size=(CONV_WIDTH)),
+    keras.layers.Conv1D(256, strides=2, activation='relu', kernel_size=(CONV_WIDTH)),
+    keras.layers.Conv1D(512, strides=2, activation='relu', kernel_size=(CONV_WIDTH)),
+    keras.layers.Conv1D(1024, strides=2, activation='relu', kernel_size=(CONV_WIDTH)),
+    #keras.layers.MaxPooling1D(pool_size=2),
+    #keras.layers.Conv1D(1024, activation='relu', kernel_size=(CONV_WIDTH)),
+    #keras.layers.MaxPooling1D(pool_size=2),
+    #keras.layers.Conv1D(1024, activation='relu', kernel_size=(CONV_WIDTH)),
+    #keras.layers.MaxPooling1D(pool_size=2),
+    #keras.layers.Conv1D(1024, activation='relu', kernel_size=(CONV_WIDTH)),
+    keras.layers.GlobalAveragePooling1D(),
+    #keras.layers.Dropout(0.5),
+    
+    # Shape => [batch, 1,  out_steps*features]
+    tf.keras.layers.Dense(OUT_STEPS*num_features,
+                          kernel_initializer=tf.initializers.zeros),
+    # Shape => [batch, out_steps, features]
+    tf.keras.layers.Reshape([OUT_STEPS, num_features])
+])
+
+
+# In[797]:
+
+
+MAX_EPOCHS = 400
+history = compile_and_fit(multi_conv_model, multi_window)
+
+#IPython.display.clear_output()
+
+multi_val_performance['Conv'] = multi_conv_model.evaluate(multi_window.val.repeat(-1), steps=100)
+multi_performance['Conv'] = multi_conv_model.evaluate(multi_window.test.repeat(-1), steps=100, verbose=1)
+print('val performance =', multi_val_performance['Conv'])
+print('test performance = ', multi_performance['Conv'])
+
+
+# In[816]:
+
+
+multi_val_performance['Conv'] = multi_conv_model.evaluate(multi_window.val.repeat(-1), steps=100)
+multi_performance['Conv'] = multi_conv_model.evaluate(multi_window.test.repeat(-1), steps=100, verbose=1)
+print('val performance =', multi_val_performance['Conv'])
+print('test performance = ', multi_performance['Conv'])
+
+
+# In[799]:
+
+
+plot_history(history)
+
+
+# In[800]:
+
+
+multi_window.plot2(multi_conv_model, plot_col=out_features[0])
+
+
+# **RNN(lstm)**
+
+# In[801]:
+
+
+multi_lstm_model = tf.keras.Sequential([
+    # Shape [batch, time, features] => [batch, lstm_units]
+    # Adding more `lstm_units` just overfits more quickly.
+    #tf.keras.layers.LSTM(32, return_sequences=False),
+    tf.keras.layers.LSTM(128, return_sequences=False),
+    # Shape => [batch, out_steps*features]
+    tf.keras.layers.Dense(OUT_STEPS*out_num_features,
+                          kernel_initializer=tf.initializers.zeros),
+    # Shape => [batch, out_steps, features]
+    tf.keras.layers.Reshape([OUT_STEPS, out_num_features])
+])
+
+history = compile_and_fit(multi_lstm_model, multi_window)
+
+#IPython.display.clear_output()
+
+multi_val_performance['LSTM'] = multi_lstm_model.evaluate(multi_window.val.repeat(-1), steps=100)
+multi_performance['LSTM'] = multi_lstm_model.evaluate(multi_window.test.repeat(-1), steps=100, verbose=1)
+print('val performance =', multi_val_performance['LSTM'])
+print('test performance = ', multi_performance['LSTM'])
+
+
+# In[803]:
+
+
+plot_history(history)
+
+
+# In[804]:
+
+
+multi_window.plot2(multi_lstm_model, plot_col=out_features[0])
+
+
+# **Autoregressive model**
+
+# In[806]:
+
+
+class FeedBack(tf.keras.Model):
+  def __init__(self, units, out_steps):
+    super().__init__()
+    self.out_steps = out_steps
+    self.units = units
+    self.lstm_cell = tf.keras.layers.LSTMCell(units)
+    # Also wrap the LSTMCell in an RNN to simplify the `warmup` method.
+    self.lstm_rnn = tf.keras.layers.RNN(self.lstm_cell, return_state=True)
+    self.dense = tf.keras.layers.Dense(num_features)
+    
+feedback_model = FeedBack(units=32, out_steps=OUT_STEPS)
+
+def warmup(self, inputs):
+  # inputs.shape => (batch, time, features)
+  # x.shape => (batch, lstm_units)
+  x, *state = self.lstm_rnn(inputs)
+  #print('x =', x)
+
+  # predictions.shape => (batch, features)
+  prediction = self.dense(x)
+  return prediction, state
+
+FeedBack.warmup = warmup
+
+prediction, state = feedback_model.warmup(multi_window.example[0])
+prediction.shape
+
+def call(self, inputs, training=None):
+  # Use a TensorArray to capture dynamically unrolled outputs.
+  predictions = []
+  # Initialize the lstm state
+  prediction, state = self.warmup(inputs)
+
+  # Insert the first prediction
+  predictions.append(prediction)
+
+  # Run the rest of the prediction steps
+  for n in range(1, self.out_steps):
+    # Use the last prediction as input.
+    x = prediction
+    # Execute one lstm step.
+    x, state = self.lstm_cell(x, states=state,
+                              training=training)
+    # Convert the lstm output to a prediction.
+    prediction = self.dense(x)
+    # Add the prediction to the output
+    predictions.append(prediction)
+
+  # predictions.shape => (time, batch, features)
+  predictions = tf.stack(predictions)
+  # predictions.shape => (batch, time, features)
+  predictions = tf.transpose(predictions, [1, 0, 2])
+  predictions = tf.keras.layers.Lambda(lambda x: x[:, :, out_features[0]:(out_features[0]+len(out_features))])(predictions)
+  return predictions
+
+FeedBack.call = call
+
+print('Output shape (batch, time, features): ', feedback_model(multi_window.example[0]).shape)
+
+
+# In[807]:
+
+
+it = iter(multi_window.train)
+x,y = next(it)
+print(x.shape, y.shape)
+pred = feedback_model.predict(x)
+pred.shape
+
+
+# In[808]:
+
+
+history = compile_and_fit(feedback_model, multi_window)
+
+#IPython.display.clear_output()
+
+multi_val_performance['AR LSTM'] = feedback_model.evaluate(multi_window.val)
+multi_performance['AR LSTM'] = feedback_model.evaluate(multi_window.test, verbose=0)
+
+print('val performance =', multi_val_performance['AR LSTM'])
+print('test performance = ', multi_performance['AR LSTM'])
+
+
+# In[809]:
+
+
+plot_history(history)
+
+
+# In[810]:
+
+
+multi_window.plot2(feedback_model, plot_col=out_features[0])
+
+
+# **performance**
+
+# In[817]:
+
+
+x = np.arange(len(multi_performance))
+width = 0.3
+
+
+metric_name = 'mean_absolute_error'
+metric_index = multi_conv_model.metrics_names.index('mean_absolute_error')
+val_mae = [v[metric_index] for v in multi_val_performance.values()]
+test_mae = [v[metric_index] for v in multi_performance.values()]
+
+plt.figure()
+plt.bar(x - 0.17, val_mae, width, label='Validation')
+plt.bar(x + 0.17, test_mae, width, label='Test')
+plt.xticks(ticks=x, labels=multi_performance.keys(),
+           rotation=45)
+plt.ylabel(f'MAE (average over all times and outputs)')
+_ = plt.legend()
+plt.show()
+
+
 # ## 연습 섹션
 
-# In[78]:
+# In[ ]:
+
+
+
+
+
+# In[ ]:
 
 
 it = iter(wide_window.val)
 x,y = next(it)
 
 
-# In[79]:
+# In[ ]:
 
 
 x.shape, y.shape
 
 
-# In[80]:
+# In[ ]:
 
 
 history = gain.fit(wide_window.train, epochs=20,
@@ -1605,7 +2691,7 @@ history = gain.fit(wide_window.train, epochs=20,
                       callbacks=[])
 
 
-# In[81]:
+# In[ ]:
 
 
 it = iter(wide_window.val)
@@ -1613,33 +2699,33 @@ x,y = next(it)
 x.shape, y.shape
 
 
-# In[82]:
+# In[ ]:
 
 
 gain.predict(x)
 
 
-# In[83]:
+# In[ ]:
 
 
 df[0].isna().astype(int).sum()
 
 
-# In[84]:
+# In[ ]:
 
 
 date_time1 = pd.to_datetime(df_full[0].iloc[:, 0], format='%Y.%m.%d %H:%M')
 date_time2 = pd.to_datetime(df_full[0].iloc[:, 0], format='%Y.%m.%d %H:%M')
 
 
-# In[85]:
+# In[ ]:
 
 
 timestamp_s1 = date_time1.map(datetime.datetime.timestamp)
 timestamp_s2 = date_time2.map(datetime.datetime.timestamp)
 
 
-# In[86]:
+# In[ ]:
 
 
 day = 24*60*60
@@ -1656,7 +2742,7 @@ df[1]['Year sin'] = np.sin(timestamp_s2 * (2 * np.pi / year))
 df[1]['Year cos'] = np.cos(timestamp_s2 * (2 * np.pi / year))
 
 
-# In[87]:
+# In[ ]:
 
 
 class CustomModel(keras.Model):
@@ -1683,7 +2769,7 @@ class CustomModel(keras.Model):
         return {m.name: m.result() for m in self.metrics}
 
 
-# In[88]:
+# In[ ]:
 
 
 import numpy as np
@@ -1700,32 +2786,32 @@ y = np.random.random((1000, 1))
 model.fit(x, y, epochs=3)
 
 
-# In[89]:
+# In[ ]:
 
 
 ds = tf.data.Dataset.from_tensor_slices((x,y))
 
 
-# In[90]:
+# In[ ]:
 
 
 ds.element_spec
 
 
-# In[91]:
+# In[ ]:
 
 
 ds = ds.batch(5)
 ds.element_spec
 
 
-# In[109]:
+# In[ ]:
 
 
 df2
 
 
-# In[92]:
+# In[ ]:
 
 
 model.fit(ds)
@@ -1736,7 +2822,7 @@ model.fit(ds)
 # https://towardsdatascience.com/keras-custom-data-generators-example-with-mnist-dataset-2a7a2d2b0360
 # 
 
-# In[93]:
+# In[ ]:
 
 
 import tensorflow as tf
@@ -1749,14 +2835,14 @@ import numpy as np
 import math
 
 
-# In[94]:
+# In[ ]:
 
 
 mnist = tf.keras.datasets.mnist
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
 
-# In[95]:
+# In[ ]:
 
 
 class DataGenerator(tf.compat.v2.keras.utils.Sequence):
@@ -1833,7 +2919,7 @@ class DataGenerator(tf.compat.v2.keras.utils.Sequence):
                 y,num_classes=self.n_classes)
 
 
-# In[96]:
+# In[ ]:
 
 
 n_classes = 10
@@ -1854,7 +2940,7 @@ model.compile(loss=keras.losses.categorical_crossentropy,
               metrics=['accuracy'])
 
 
-# In[97]:
+# In[ ]:
 
 
 train_generator = DataGenerator(x_train, y_train, batch_size = 64,
@@ -1867,14 +2953,14 @@ val_generator =  DataGenerator(x_test, y_test, batch_size=64,
                                to_fit=True, shuffle=True)
 
 
-# In[98]:
+# In[ ]:
 
 
 steps_per_epoch = len(train_generator)
 validation_steps = len(val_generator)
 
 
-# In[99]:
+# In[ ]:
 
 
 model.fit(
@@ -1885,25 +2971,25 @@ model.fit(
         validation_steps=validation_steps)
 
 
-# In[100]:
+# In[ ]:
 
 
 it = iter(train_generator)
 
 
-# In[101]:
+# In[ ]:
 
 
 x,y = next(it)
 
 
-# In[102]:
+# In[ ]:
 
 
 x.shape
 
 
-# In[103]:
+# In[ ]:
 
 
 y.shape
@@ -1911,7 +2997,7 @@ y.shape
 
 # ## MNIST with custom model
 
-# In[104]:
+# In[ ]:
 
 
 n_classes = 10
@@ -1932,7 +3018,7 @@ model.compile(loss=keras.losses.categorical_crossentropy,
               metrics=['accuracy'])
 
 
-# In[105]:
+# In[ ]:
 
 
 model.fit(
@@ -1956,7 +3042,7 @@ model.fit(
 
 # # 한글 폰트
 
-# In[106]:
+# In[ ]:
 
 
 
@@ -1967,13 +3053,13 @@ import matplotlib.font_manager
 [f.fname for f in matplotlib.font_manager.fontManager.ttflist]
 
 
-# In[107]:
+# In[ ]:
 
 
 get_ipython().system(' fc-list :lang=ko')
 
 
-# In[108]:
+# In[ ]:
 
 
 import matplotlib
@@ -1985,7 +3071,7 @@ font_location = '/usr/share/fonts/truetype/nanum/NanumGothicCoding.ttf'
 fprop = fm.FontProperties(fname=font_location)
 
 
-# In[109]:
+# In[ ]:
 
 
 fig = plt.figure()  
