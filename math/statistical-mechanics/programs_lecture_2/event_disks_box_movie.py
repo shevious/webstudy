@@ -92,7 +92,7 @@ for step in range(n_steps):
     t += remain_t
     next_event -= remain_t
     snapshot(t, pos, vel, colors)
-    print 'time',t
+    print('time',t)
 
 print('Producing animation.gif using ImageMagick...')
 os.system("convert -delay 1 -dispose Background +page " + str(output_dir)
