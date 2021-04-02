@@ -14,7 +14,6 @@ def markov_disks_box():
         a[:] = b
     return L
 
-
 N = 4
 n_steps = 2000000
 histo_data = []
@@ -27,6 +26,7 @@ pylab.hist(histo_data, bins=100, density=True)
 pylab.xlabel('x')
 pylab.ylabel('frequency')
 pylab.title('Markov chain: x coordinate histogram (density eta=0.18)')
+pylab.text(0.5, 1.75, 'n_steps = {}\ndelta = {}'.format(n_steps, delta), horizontalalignment='center')
 pylab.grid()
 pylab.savefig('markov_disks_histo.png')
 pylab.show()
