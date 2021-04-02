@@ -26,7 +26,8 @@ for run in range(N_runs):
     plt.xticks([])
     plt.yticks([])
     H, xedges, yedges = np.histogram2d(x, y, bins=(3, 3), 
-               range=[[1,3],[1,3]], normed=True)
+               #range=[[1,3],[1,3]], normed=True)
+               range=[[1,3],[1,3]], density=True)
     print(H)
     H /= np.sum(H)
     print(H)

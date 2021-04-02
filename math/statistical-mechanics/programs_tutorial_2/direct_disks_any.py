@@ -22,7 +22,7 @@ pylab.figure()
 #n, bins, patches = pylab.hist(eta_max_list, 100, histtype='step', cumulative=-1, 
 #                   log=True, normed=True, label="numerical evaluation of p_accept")
 n, bins, patches = pylab.hist(eta_max_list, 100, histtype='step', cumulative=-1, 
-                   log=True, label="numerical evaluation of p_accept")
+                   log=True, density=True, label="numerical evaluation of p_accept")
 explaw = [math.exp( - 2.0 * (N - 1) * eta) for eta in bins]
 pylab.plot(bins, explaw, 'r--', linewidth=1.5, label="1st order virial expansion")
 pylab.xlabel('density eta')
