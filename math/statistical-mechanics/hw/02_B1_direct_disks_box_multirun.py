@@ -25,7 +25,7 @@ for run in range(n_runs):
     for k in range(N):
         histo_data.append(pos[k][0])
 #pylab.hist(histo_data, bins=100, normed=True)
-pylab.hist(histo_data, bins=100)
+pylab.hist(histo_data, bins=100, density=True)
 pylab.xlabel('x')
 pylab.ylabel('frequency')
 pylab.title('Direct sampling: x coordinate histogram (density eta=0.18)')

@@ -16,6 +16,8 @@ def markov_disks_box():
 
 N = 4
 n_steps = 2000000
+# For more clean histogram
+#n_steps = 8000000
 histo_data = []
 for run in range(n_steps):
     pos = markov_disks_box()

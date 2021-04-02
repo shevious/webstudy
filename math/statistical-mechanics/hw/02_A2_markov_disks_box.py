@@ -24,7 +24,6 @@ conf_a = ((0.30, 0.30), (0.30, 0.70), (0.70, 0.30), (0.70,0.70))
 conf_b = ((0.20, 0.20), (0.20, 0.80), (0.75, 0.25), (0.75,0.75))
 conf_c = ((0.30, 0.20), (0.30, 0.80), (0.70, 0.20), (0.70,0.70))
 configurations = [conf_a, conf_b, conf_c]
-#hits = {conf_a: 0, conf_b: 0, conf_c: 0}
 
 n_runs_list = [10000, 100000, 1000000, 10000000]
 
@@ -45,5 +44,3 @@ for n_runs in n_runs_list:
 
         for conf in configurations:
             print(conf, hits[conf])
-
-
