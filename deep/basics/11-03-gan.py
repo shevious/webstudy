@@ -148,8 +148,8 @@ set_trainable(discriminator, True)
 
 gan = model
 
-#mode = 'build'
-mode = 'load'
+mode = 'build'
+#mode = 'load'
 
 if mode == 'build':
     gan.save(SAVE_FOLDER)
