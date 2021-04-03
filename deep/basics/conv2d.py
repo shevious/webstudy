@@ -3,21 +3,27 @@ import tensorflow as tf
 from tensorflow import keras
 import matplotlib.pyplot as plt
 from matplotlib import image as mp_image
+import cv2
 
-img_file = keras.preprocessing.image.load_img('Vd-Orig.png')
-width,height = img_file.size
-kernel = np.array([ [ 0, 0, 0],
-                    [-1, 0, 1],
-                    [ 0, 0, 0] ])
+img_url = 'https://upload.wikimedia.org/wikipedia/en/7/7d/Lenna_%28test_image%29.png'
+img_path = keras.utils.get_file("lena.png", img_url)
+
+#img_file = keras.preprocessing.image.load_img(img_path)
+img = cv2.imread(img_path)
+img = cv2.resize(img, dsize=(100,100), interpolation=cv2.INTER_AREA)
+cv2.imwrite('lena100.png', img)
+img = mp_image.imread('lena100.png')
+
+width,height,_ = img.shape
+
 '''
+'''
+kernel = np.array([ [-1, 0, 1],
+                    [-1, 0, 1],
+                    [-1, 0, 1] ])
 kernel = np.array([ [ 1, 1, 1],
                     [ 1, 1, 1],
                     [ 1, 1, 1] ])/9
-'''
-
-img_arr = keras.preprocessing.image.img_to_array(img_file)
-#img = np.array(img_arr)
-img = mp_image.imread('Vd-Orig.png')
 
 out = np.zeros((height-2,width-2,3))
 
@@ -27,7 +33,7 @@ for j in range(0, height-2, 1):
       for k in range(0, 3, 1):
         out[j][i] += img[j+l][i+k]*kernel[l][k]
 
-out = np.abs(out)*2
+#out = np.abs(out)*2
 out = np.clip(out, 0, 1)
 #out *= 200
 #out += 128
