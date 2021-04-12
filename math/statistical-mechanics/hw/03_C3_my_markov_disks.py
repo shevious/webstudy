@@ -2,6 +2,7 @@ import random
 import math
 import pylab
 import os
+import cmath
 
 #eta = 0.3
 #N = 4
@@ -35,6 +36,29 @@ def show_conf(L, sigma, title, fname):
     pylab.savefig(fname)
     pylab.show()
     pylab.close()
+
+def delx_dely(x, y):
+    d_x = (x[0] - y[0]) % 1.0
+    if d_x > 0.5: d_x -= 1.0
+    d_y = (x[1] - y[1]) % 1.0
+    if d_y > 0.5: d_y -= 1.0
+    return d_x, d_y
+
+def Psi_6(L, sigma):
+    sum_vector = 0j
+    for i in range(N):
+        vector  = 0j
+        n_neighbor = 0
+        for j in range(N):
+            if dist(L[i], L[j]) < 2.8 * sigma and i != j:
+                n_neighbor += 1
+                dx, dy = delx_dely(L[j], L[i])
+                angle = cmath.phase(complex(dx, dy))
+                vector += cmath.exp(6.0j * angle)
+        if n_neighbor > 0:
+            vector /= n_neighbor
+        sum_vector += vector
+    return sum_vector / float(N)
 
 def read_or_create_config(N, eta, create=False):
     if os.path.isfile(filename) and not create:
@@ -71,16 +95,51 @@ def read_or_create_config(N, eta, create=False):
               min_dist = min(min_dist, dist(b, d))
         if not (min_dist < 2.0 * sigma):
             a[:] = b
+        if steps % 100 == 0:
+            Psi_6_abs = abs(Psi_6(L, sigma))
+            Psi_6_list.append(Psi_6_abs)
+            #print(Psi_6_abs)
 
     return L
 
-L = read_or_create_config(N, eta, False)
+from statistics import mean
 
-f = open(filename, 'w')
-for a in L:
-   f.write(str(a[0]) + ' ' + str(a[1]) + '\n')
-f.close()
+print('Warming up for 10 times.')
+for i in range(10):
+    Psi_6_list = []
+    L = read_or_create_config(N, eta)
+    f = open(filename, 'w')
+    for a in L:
+       f.write(str(a[0]) + ' ' + str(a[1]) + '\n')
+    f.close()
 
-print(L)
+print('Starting to calculate Psi_6')
+Psi_6_avg = []
+eta_list = []
+while eta >= 0.02:
+    Psi_6_list = []
+    L = read_or_create_config(N, eta)
 
-show_conf(L, sigma, 'test graph', 'disks.png')
+    f = open(filename, 'w')
+    for a in L:
+       f.write(str(a[0]) + ' ' + str(a[1]) + '\n')
+    f.close()
+
+    avg = mean(Psi_6_list)
+    Psi_6_avg.append(avg)
+    eta_list.append(eta)
+    print(eta, avg)
+
+    eta -= 0.02
+    sigma = math.sqrt(eta/(N*math.pi))
+    delta = 0.3*sigma
+
+#print(L)
+
+#show_conf(L, sigma, 'test graph', 'disks_phi.png')
+
+pylab.figure()
+pylab.plot(eta_list, Psi_6_avg)
+pylab.xlabel('$\eta$')
+pylab.ylabel('avg $|\Psi_6|$')
+pylab.show()
