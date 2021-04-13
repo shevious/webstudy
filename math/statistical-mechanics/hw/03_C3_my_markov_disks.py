@@ -84,15 +84,7 @@ def read_or_create_config(N, eta, create=False):
         # periodic boundary condition
         b[0] = b[0] % 1.0
         b[1] = b[1] % 1.0
-        # set initial distance large enought
-        min_dist = 4
-        for c in L:
-          if c == a:
-            continue
-          for ix in range(-1, 2):
-            for iy in range(-1, 2):
-              d = [c[0]+ix, c[1]+iy]
-              min_dist = min(min_dist, dist(b, d))
+        min_dist = min(dist(b,c) for c in L if c != a)
         if not (min_dist < 2.0 * sigma):
             a[:] = b
         if steps % 100 == 0:

@@ -5,14 +5,15 @@ import os
 
 #eta = 0.3
 #N = 4
-eta = 0.72
-N = 64
-#eta = 0.42
+#eta = 0.72
 #N = 64
+eta = 0.42
+N = 64
 sigma = math.sqrt(eta/(N*math.pi))
 delta = 0.3*sigma
 #n_steps = 1000
-n_steps = 10000
+#n_steps = 10000
+n_steps = 0
 filename = 'disk_configuration_N%i_eta%.2f.txt' % (N, eta)
 
 def dist(x,y):
@@ -60,15 +61,7 @@ def read_or_create_config(N, eta, create=False):
         # periodic boundary condition
         b[0] = b[0] % 1.0
         b[1] = b[1] % 1.0
-        # set initial distance large enought
-        min_dist = 4
-        for c in L:
-          if c == a:
-            continue
-          for ix in range(-1, 2):
-            for iy in range(-1, 2):
-              d = [c[0]+ix, c[1]+iy]
-              min_dist = min(min_dist, dist(b, d))
+        min_dist = min(dist(b,c) for c in L if c != a)
         if not (min_dist < 2.0 * sigma):
             a[:] = b
 
@@ -81,6 +74,6 @@ for a in L:
    f.write(str(a[0]) + ' ' + str(a[1]) + '\n')
 f.close()
 
-print(L)
+#print(L)
 
 show_conf(L, sigma, 'test graph', 'disks.png')
