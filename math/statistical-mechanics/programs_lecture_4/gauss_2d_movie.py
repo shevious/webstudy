@@ -12,5 +12,6 @@ pylab.xlabel('$x$', fontsize=14)
 pylab.ylabel('$y$', fontsize=14)
 pylab.xlim(-4.0, 4.0)
 pylab.ylim(-4.0, 4.0)
-pylab.axes().set_aspect('equal') # set the aspect ratio of the plot
+#pylab.axes().set_aspect('equal') # set the aspect ratio of the plot
+pylab.axis('equal')
 pylab.savefig('plot-gauss_2d.png')

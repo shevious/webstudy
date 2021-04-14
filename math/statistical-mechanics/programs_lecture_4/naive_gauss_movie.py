@@ -10,8 +10,8 @@ for K in [1, 2, 6]:
     print('K = %i' % K)
     sigma = math.sqrt(K / 12.0)
     data = []
-    for sample in xrange(nsamples):
-        data += [sum(random.uniform(-0.5, 0.5) for k in xrange(K)) / sigma]
+    for sample in range(nsamples):
+        data += [sum(random.uniform(-0.5, 0.5) for k in range(K)) / sigma]
     pylab.hist(data, bins=200, normed=True, histtype='step', label='sampled (K=%i)' % K)
 pylab.legend()
 pylab.title('Sampling of the gaussian distribution\n(naive_gauss_movie.py)')
