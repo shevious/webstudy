@@ -46,11 +46,11 @@ ax.grid(True, which='both')
 ax.axhline(y=0, color='k')
 ax.axvline(x=0, color='k')
 #fig.colorbar(ret, ax=ax);
-ax.axis([-5,5,-0.25,1])
+ax.axis([-1,1,-0.25,1])
 plt.show()
 
-x = np.linspace(-1, 1, num=50)
-y = np.linspace(-1, 1, num=50)
+x = np.linspace(-5, 5, num=50)
+y = np.linspace(-5, 5, num=50)
 y[x<0] = 0
 fig, ax = plt.subplots()
 ret = ax.scatter(x, y, c=y, cmap=cm.coolwarm)
@@ -58,7 +58,18 @@ ax.grid(True, which='both')
 ax.axhline(y=0, color='k')
 ax.axvline(x=0, color='k')
 #fig.colorbar(ret, ax=ax);
-ax.axis([-1,1,-0.25,1])
+ax.axis([-5,5,-0.4,5])
+plt.show()
+
+x = np.linspace(-5, 5, num=50)
+y = x*np.tanh(np.log(1+np.exp(x)))
+fig, ax = plt.subplots()
+ret = ax.scatter(x, y, c=y, cmap=cm.coolwarm)
+ax.grid(True, which='both')
+ax.axhline(y=0, color='k')
+ax.axvline(x=0, color='k')
+#fig.colorbar(ret, ax=ax);
+ax.axis([-5,5,-0.4,5])
 plt.show()
 
 w = 1

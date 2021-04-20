@@ -159,4 +159,4 @@ if __name__ == "__main__":
     print(labels)
 
     # save images to disk
-    #save_images(images, labels)
+    save_images(images, labels)

@@ -20,9 +20,7 @@ fashion_mnist = keras.datasets.fashion_mnist
 
 class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
                'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
-
-print(train_images.shape)
-print(train_labels.shape)
+NUM_CLASSES = 10
 
 
 '''
@@ -53,24 +51,20 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.utils import to_categorical
 
-NUM_CLASSES = 10
 
 x_train = x_train/255.
 x_test = x_test/255.
 
-#y_train = to_categorical(y_train, NUM_CLASSES)
-#y_test = to_categorical(y_test, NUM_CLASSES)
+y_train = to_categorical(y_train, NUM_CLASSES)
+y_test = to_categorical(y_test, NUM_CLASSES)
 print("converted y.shape = ", y_train.shape)
 
 input_layer = Input((28, 28))
-
 x = Flatten()(input_layer)
-
 x = Dense(128, activation = 'relu')(x)
-
 output_layer = Dense(NUM_CLASSES, activation = 'softmax')(x)
+model = Model(input_layer, output_layer)
 
-#model = Model(input_layer, output_layer)
 model = keras.Sequential([
     keras.layers.Flatten(input_shape=(28, 28)),
     keras.layers.Dense(128, activation='relu'),
@@ -80,8 +74,8 @@ model = keras.Sequential([
 model.summary()
 
 model.compile(optimizer='adam',
-              loss='sparse_categorical_crossentropy',
-              #loss='categorical_crossentropy',
+              #loss='sparse_categorical_crossentropy',
+              loss='categorical_crossentropy',
               metrics=['accuracy'])
 
 model.fit(x_train, y_train, epochs=5)
