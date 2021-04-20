@@ -5,11 +5,11 @@ import pylab
 def V_sph(dim):
     return math.pi ** (dim / 2.0) / math.gamma(dim / 2.0 + 1.0)
 
-n_trials = 5000000
-d = 4
+n_trials = 10000000
+d = 200
 
 delta = 0.05
-print('n_trials =', n_trials)
+print('d =', d, ', n_trials =', n_trials)
 
 x = [0]*(d-1)
 old_radius_square = 0

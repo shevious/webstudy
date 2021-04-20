@@ -19,5 +19,5 @@ for i in range(nx):
               math.exp(- beta * 2.0 * (math.pi * n / L) ** 2) *
               (psi_s(x[i], L, n) * psi_s(x[j], L, n) + 
               psi_a(x[i], L, n) * psi_a(x[j], L, n) )
-              for n in range(1, (ntot + 1) / 2))
+              for n in range(1, (ntot + 1) // 2))
               for j in range(nx)])
