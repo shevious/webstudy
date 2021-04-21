@@ -10,7 +10,7 @@ for k in range(50000):
         x = x_new 
     data.append(x)
 
-pylab.hist(data, 100, normed = 'True')
+pylab.hist(data, 100, density = 'True')
 x = [a / 10.0 for a in range(-50, 51)]
 y = [math.exp(- a ** 2 / 2.0) / math.sqrt(2.0 * math.pi) for a in x]
 pylab.plot(x, y, c='red', linewidth=2.0)
