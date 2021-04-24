@@ -25,7 +25,7 @@ beta = 4.0
 N = 16                                             # number of slices
 dtau = beta / N
 delta = 1.0                                       # maximum displacement on one slice
-n_steps = 1000000                                 # number of Monte Carlo steps
+n_steps = 5000000                                 # number of Monte Carlo steps
 x = [0.0] * N                                     # initial path
 
 step_size = 10                                    # histogram record steps

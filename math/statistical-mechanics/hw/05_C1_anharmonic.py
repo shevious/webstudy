@@ -39,10 +39,12 @@ for j in range(nx + 1):
 f.close()
 
 # graphics output
-pylab.imshow(rho, extent=[-x_max, x_max, -x_max, x_max], origin='lower')
-pylab.colorbar()
 pylab.title('$\\beta = 2^{%i}$' % math.log(beta, 2))
-pylab.xlabel('$x$', fontsize=18)
-pylab.ylabel('$x\'$', fontsize=18)
-pylab.savefig('plot-anharmonic-rho.png')
+pylab.plot(x, pi_of_x, label='matrix-square')
+#pylab.plot(x, pi_q, '--', label='analytic')
+pylab.xlim(-2, 2)
+pylab.xlabel('$x$', fontsize=12)
+pylab.ylabel('$\pi(x)$', fontsize=12)
+pylab.legend()
+pylab.savefig('plot-anharmonic-pi.png')
 pylab.show()

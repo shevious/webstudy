@@ -1,5 +1,8 @@
 import math, numpy, pylab
 
+def pi_quant(x, beta):
+    return math.sqrt(math.tanh(beta/2)/math.pi)*math.exp(-x**2*math.tanh(beta/2))
+
 # Free off-diagonal density matrix
 def rho_free(x, xp, beta):
     return (math.exp(-(x - xp) ** 2 / (2.0 * beta)) /
@@ -31,11 +34,14 @@ for j in range(nx + 1):
     f.write(str(x[j]) + ' ' + str(rho[j, j] / Z) + '\n')
 f.close()
 
+pi_q = [pi_quant(x_i, beta) for x_i in x]
+
 # graphics output
-pylab.imshow(rho, extent=[-x_max, x_max, -x_max, x_max], origin='lower')
-pylab.colorbar()
 pylab.title('$\\beta = 2^{%i}$' % math.log(beta, 2))
-pylab.xlabel('$x$', fontsize=18)
-pylab.ylabel('$x\'$', fontsize=18)
-pylab.savefig('plot-harmonic-rho.png')
+pylab.plot(x, pi_of_x, label='matrix-square')
+pylab.plot(x, pi_q, '--', label='analytic')
+pylab.xlabel('$x$', fontsize=12)
+pylab.ylabel('$\pi(x)$', fontsize=12)
+pylab.legend()
+pylab.savefig('plot-harmonic-pi.png')
 pylab.show()
