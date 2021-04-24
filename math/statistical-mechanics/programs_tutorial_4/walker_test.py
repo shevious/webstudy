@@ -37,7 +37,7 @@ for k in range(n_samples):
     else: samples.append(table[i][2])
 
 pylab.figure()
-pylab.hist(samples, bins=N, range=(-0.5, N-0.5), normed=True)
+pylab.hist(samples, bins=N, range=(-0.5, N-0.5), density=True)
 pylab.plot(x_val, y_val,'ro', ms=8)
 pylab.title("Histogram using Walker's method for a discrete distribution\n\
              on $N=$"+str(N)+" choices ("+str(n_samples)+" samples)",fontsize=14)

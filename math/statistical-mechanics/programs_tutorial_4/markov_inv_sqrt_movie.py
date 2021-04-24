@@ -15,7 +15,7 @@ for k in range(n_trials):
          print(y_max, x, k)
     data.append(x)
 
-pylab.hist(data, bins=100, normed='True')
+pylab.hist(data, bins=100, density='True')
 pylab.xlabel('$x$', fontsize=16)
 pylab.ylabel('$\pi(x)$', fontsize=16)
 x = [a / 100.0 for a in range(1, 101)]

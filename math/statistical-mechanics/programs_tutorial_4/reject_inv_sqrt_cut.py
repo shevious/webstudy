@@ -12,7 +12,7 @@ while n_accept < n_data:
         n_accept += 1
         data.append(x)
 
-pylab.hist(data, bins=100, normed='True')
+pylab.hist(data, bins=100, density='True')
 x = [a / 100.0 for a in range(1, 100)]
 y = [1.0 / (2.0 * math.sqrt(a)) for a in x]
 pylab.plot(x, y, 'red', linewidth = 2)
