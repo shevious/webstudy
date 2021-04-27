@@ -1,4 +1,5 @@
 import math, random, pylab
+import numpy
 
 def levy_free_path(xstart, xend, dtau, N):
     x = [xstart]
@@ -27,15 +28,14 @@ def V(x, cubic, quartic):
     return pot
 
 beta = 20.0
-N = 80
+N = 100
 dtau = beta / N
 delta = 1.0
-n_steps = 1000000
-#x = [0.0] * N
-x = [0.0]
+n_steps = 500000
+x = [0.0] * N
 data = []
 
-Ncut = N//2
+Ncut = 20
 quartic = 1
 cubic = -quartic
 
@@ -45,17 +45,44 @@ Trotter_weight_old = math.exp(sum(-V(a, cubic, quartic) * dtau for a in x))
 count =0
 
 for step in range(n_steps):
-    xnew = levy_free_path(x[0], x[0], dtau, N)
-    Trotter_weight_new = math.exp(sum(-V(a, cubic, quartic) * dtau for a in xnew))
+    x_new = levy_free_path(x[0], x[Ncut], dtau, Ncut) + x[Ncut:]
+    Trotter_weight_new = math.exp(sum(-V(a, cubic, quartic) * dtau for a in x_new))
     if random.uniform(0, 1) < Trotter_weight_new/Trotter_weight_old:
-        x = xnew
-        x = x[Ncut:] + x[:Ncut]
+        Trotter_weight_old = Trotter_weight_new
+        x = x_new[:]
         count += 1
+    x = x[1:] + x[:1]
     k = random.randint(0, N - 1)
     data.append(x[k])
 
-print('count =', count)
   
+# matrix-sqauring
+
+# Free off-diagonal density matrix
+def rho_free(x, xp, beta):
+    return (math.exp(-(x - xp) ** 2 / (2.0 * beta)) /
+          math.sqrt(2.0 * math.pi * beta))
+
+# Harmonic density matrix in the Trotter approximation (returns the full matrix)
+def rho_harmonic_trotter(grid, beta):
+    return numpy.array([[rho_free(x, xp, beta) * \
+          numpy.exp(-0.5 * beta * (V(x, cubic, quartic) + V(xp, cubic, quartic))) \
+          for x in grid] for xp in grid])
+
+x_max = 5.0
+nx = 200
+dx = 2.0 * x_max / (nx - 1)
+x = [i * dx for i in range(-(nx - 1) // 2, nx // 2 + 1)]
+beta_tmp = 20/(2.0 ** (8))            # initial value of beta (power of 2)
+beta     = 20.                      # actual value of beta (power of 2)
+rho = rho_harmonic_trotter(x, beta_tmp)  # density matrix at initial beta
+while beta_tmp < beta:
+    rho = numpy.dot(rho, rho)
+    rho *= dx
+    beta_tmp *= 2.0
+
+Z = sum(rho[j, j] for j in range(nx + 1)) * dx
+pi_of_x = [rho[j, j] / Z for j in range(nx + 1)]
 
 # graphics
 '''
@@ -69,15 +96,16 @@ pylab.savefig('plot_B2_levi_path_beta%s.png' % beta)
 pylab.show()
 '''
 
-pylab.hist(data, density=True, bins=100, label='Levi-path')
+pylab.hist(data, density=True, bins=200, label='Levi-path')
+pylab.plot(x, pi_of_x, label='matrix-square')
 list_x = [0.1 * a for a in range (-30, 31)]
 list_y = [math.sqrt(math.tanh(beta / 2.0)) / math.sqrt(math.pi) * \
           math.exp(-x ** 2 * math.tanh(beta / 2.0)) for x in list_x]
-pylab.plot(list_x, list_y, label='analytic')
+#pylab.plot(list_x, list_y, label='analytic')
 pylab.legend()
 pylab.xlabel('$x$')
 pylab.ylabel('$\\pi(x)$ (normalized)')
-pylab.title('metro_levi_free_anharmonic (beta=%s, N=%i, n_steps=%i)' % (beta, N, n_steps))
+pylab.title('metro_levi_free_anharmonic\n(beta=%s, N=%i, n_steps=%i, Ncut=%i)' % (beta, N, n_steps, Ncut))
 pylab.xlim(-2, 2)
 pylab.savefig('plot_C1_metro_levi_free.png')
 pylab.show()
