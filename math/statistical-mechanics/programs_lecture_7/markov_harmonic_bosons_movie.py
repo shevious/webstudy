@@ -58,7 +58,7 @@ for step in range(nsteps):
 
 fig = pylab.figure()
 ax = mpl_toolkits.mplot3d.axes3d.Axes3D(fig)
-ax.set_aspect('equal')
+#ax.set_aspect('equal')
 list_colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k']
 n_colors = len(list_colors)
 dict_colors = {}
