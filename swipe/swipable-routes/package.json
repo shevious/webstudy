@@ -10,7 +10,7 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.2.0",
     "react-swipeable-routes": "https://raw.githubusercontent.com/shevious/react-swipeable-routes/0.6.0u/react-swipeable-routes-0.6.0.tgz",
-    "swiper": "^5.1.0",
+    "swiper": "^6.5.1",
     "typescript": "^3.6.4"
   },
   "scripts": {
