@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "animated": "^0.2.2",
-    "next": "^9.0.6",
+    "next": "^11.1.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-swipeable-views": "^0.13.3"
