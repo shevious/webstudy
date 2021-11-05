@@ -46,7 +46,7 @@ def animate(i):
   print((2*(0.2*w+b-0.3)*0.2 + 2*(0.8*w+b-0.9)*0.8),(2*(0.2*w+b-0.3) + 2*(0.8*w+b-0.9)))
   w = w2
   b = b2
-  print('i:',i,w,b)
+  print('i:',i,'w =',w,'b =',b)
   return (ax2,)
 
 i = np.arange(50)
