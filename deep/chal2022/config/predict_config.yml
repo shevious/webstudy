@@ -1,0 +1,10 @@
+DIRECTORY:
+  dataset: dataset
+
+TRAIN:
+  train_serial_bak: '20220607_112317'
+  train_serial: '20220612_020902'
+
+PREDICT:
+  seed: 42
+  gpu: 0

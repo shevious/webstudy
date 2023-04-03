@@ -1,0 +1,40 @@
+DIRECTORY:
+  dataset: dataset
+
+AUGMENTATION:
+  
+TRAINER :
+  debug: True
+  tokenizer: ElectraTokenizerFast
+  model: electra
+  pretrained: monologg/koelectra-base-v3-discriminator
+  pretrained_bak: monologg/koelectra-base-v3-finetuned-korquad
+  optimizer: adamw
+  learning_rate: 5.0e-5
+  loss: crossentropy
+  metric:
+    - accuracy
+  n_epochs: 20
+  early_stopping_target: val_loss
+  early_stopping_patience: 10
+  early_stopping_mode: min
+  amp: False
+  gpu: 0
+  seed: 42
+
+MODEL:
+  electra:
+
+DATALOADER:
+  batch_size: 16
+  num_workers: 0
+  shuffle: True
+  pin_memory: True
+  drop_last: False
+
+LOGGER:
+  wandb: False
+  logging_interval: 200
+  plot:
+    - loss
+    - accuracy
