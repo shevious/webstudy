@@ -16,6 +16,7 @@ import torch.multiprocessing as mp
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data.distributed import DistributedSampler
 from torch.distributed.fsdp import FullyShardedDataParallel as FSDP
+from torch.distributed.fsdp import ShardingStrategy
 from torch.distributed.fsdp.fully_sharded_data_parallel import (
     CPUOffload,
     BackwardPrefetch,
@@ -102,6 +103,7 @@ def test(model, rank, world_size, test_loader):
             100. * ddp_loss[1] / ddp_loss[2]))
 
 def fsdp_main(rank, world_size, args):
+    print('### rank =', rank, 'world_size =', world_size);
     setup(rank, world_size)
 
     transform=transforms.Compose([
@@ -128,7 +130,8 @@ def fsdp_main(rank, world_size, args):
     train_loader = torch.utils.data.DataLoader(dataset1,**train_kwargs)
     test_loader = torch.utils.data.DataLoader(dataset2, **test_kwargs)
     my_auto_wrap_policy = functools.partial(
-        size_based_auto_wrap_policy, min_num_params=100
+        #size_based_auto_wrap_policy, min_num_params=100
+        size_based_auto_wrap_policy, min_num_params=20000
     )
     torch.cuda.set_device(rank)
 
@@ -138,7 +141,11 @@ def fsdp_main(rank, world_size, args):
 
     model = Net().to(rank)
 
-    model = FSDP(model)
+    model = FSDP(model,
+                 auto_wrap_policy=my_auto_wrap_policy,
+                 #sharding_strategy=ShardingStrategy.HYBRID_SHARD,
+                 sharding_strategy=ShardingStrategy.FULL_SHARD,
+                )
 
     optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
 
