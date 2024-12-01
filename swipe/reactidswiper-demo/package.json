@@ -5,7 +5,7 @@
   "dependencies": {
     "@react-yuki/ui": "^0.0.34",
     "bulma": "^0.8.0",
-    "node-sass": "^4.13.0",
+    "node-sass": "^7.0.0",
     "react": "^16.11.0",
     "react-app-polyfill": "^1.0.4",
     "react-dom": "^16.11.0",
