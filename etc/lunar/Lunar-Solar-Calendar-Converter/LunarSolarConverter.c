@@ -82,9 +82,9 @@ Solar SolarFromInt(long g) {
     y = y + (mi + 2) / 12;
     long dd = ddd - (mi * 306 + 5) / 10 + 1;
     Solar solar = {
-            .solarYear = (int) y,
-            .solarMonth = (int) mm,
             .solarDay = (int) dd,
+            .solarMonth = (int) mm,
+            .solarYear = (int) y,
     };
     return solar;
 }
