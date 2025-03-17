@@ -21,8 +21,11 @@ dataset = load_dataset(dataset_name, split="train")
 
 # Load the model + tokenizer
 model_name = "meta-llama/Llama-2-7b-hf"
+
+import os
+max_seq_length = 512
 token = os.environ['HF_ACCESS_TOKEN']
-tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, token=token)
+tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, token=token, max_seq_length=max_seq_length)
 tokenizer.pad_token = tokenizer.eos_token
 bnb_config = BitsAndBytesConfig(
     load_in_4bit=True,
@@ -35,7 +38,7 @@ model = AutoModelForCausalLM.from_pretrained(
     trust_remote_code=True,
     use_cache = False,
     device_map = device_map,
-    token = token
+    token = token,
 )
 
 # PEFT config
@@ -81,7 +84,7 @@ training_arguments = TrainingArguments(
     lr_scheduler_type=lr_scheduler_type,
     gradient_checkpointing=True,
     gradient_checkpointing_kwargs = {"use_reentrant": False}, #must be false for DDP
-    report_to="wandb",
+    #report_to="wandb",
 )
 
 # Trainer 
@@ -89,10 +92,10 @@ trainer = SFTTrainer(
     model=model,
     train_dataset=dataset,
     peft_config=peft_config,
-    dataset_text_field="text",
-    max_seq_length=max_seq_length,
+    #dataset_text_field="text",
     tokenizer=tokenizer,
     args=training_arguments,
+    #max_seq_length=max_seq_length,
 )
 
 # Train :)
