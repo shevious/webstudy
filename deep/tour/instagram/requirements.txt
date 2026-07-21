@@ -1,0 +1,2 @@
+instaloader>=4.15
+browser_cookie3>=0.19
